@@ -1,0 +1,1762 @@
+<Kinbody name="wing">
+    <!-- MAIN BODY -->
+    <body name="wing" type="dynamic">
+        <geom type="trimesh" modifiable="false">
+            <data>objects/meshes/wing.stl 0.001</data>
+            <render>objects/meshes/wing.stl 0.001</render>
+            <diffusecolor>0.6 0.6 0.6</diffusecolor>
+            <ambientcolor>0.6 0.6 0.6</ambientcolor>
+        </geom>
+        <translation>0 -0.001 -0.001</translation>
+    </body>
+    
+    <!-- HOLES: 1-24/144 -->
+    <body name="hole0001" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0002" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0003" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0004" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0005" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0006" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0007" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0008" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.32 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0009" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0010" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0011" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0012" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0013" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0014" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0015" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0016" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0017" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0018" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0019" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0020" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0021" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0022" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0023" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body>
+    <body name="hole0024" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.0355 0.3475</translation>
+        <rotationaxis>1 0 0 148.0</rotationaxis>
+    </body> 
+
+
+
+    <!-- HOLES: 25-48/144 -->
+    <body name="hole0025" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0026" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0027" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0028" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0029" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0030" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0031" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0032" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.32 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0033" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0034" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0035" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0036" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0037" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0038" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0039" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0040" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0041" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0042" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0043" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0044" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0045" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0046" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0047" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+    <body name="hole0048" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.0560 0.3325</translation>
+        <rotationaxis>1 0 0 140.2</rotationaxis>
+    </body>
+
+
+
+    <!-- HOLES: 49-72/144 -->
+    <body name="hole0049" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0050" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0051" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0052" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0053" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0054" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0055" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0056" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.32 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0057" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0058" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0059" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0060" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0061" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0062" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0063" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.0768 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0064" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0065" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0066" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.0768 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0067" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0068" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0069" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0070" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0071" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+    <body name="hole0072" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.07675 0.3125</translation>
+        <rotationaxis>1 0 0 132.0</rotationaxis>
+    </body>
+
+
+
+    <!-- HOLES: 73-96/144 -->
+    <body name="hole0073" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0074" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0075" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0076" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0077" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0078" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0079" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0080" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+       <translation>0.32 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0081" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0082" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0083" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0084" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0085" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0086" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0087" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0088" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0089" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0090" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0091" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0092" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0093" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0094" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0095" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+    <body name="hole0096" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.0950 0.2875</translation>
+        <rotationaxis>1 0 0 121.0</rotationaxis>
+    </body>
+
+
+
+    <!-- HOLES: 97-120/144 -->
+    <body name="hole0097" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0098" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0099" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0100" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0101" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0102" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0103" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0104" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+       <translation>0.32 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0105" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0106" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0107" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0108" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0109" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0110" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0111" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0112" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0113" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0114" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0115" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0116" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0117" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0118" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0119" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+    <body name="hole0120" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.10875 0.2625</translation>
+        <rotationaxis>1 0 0 116.6</rotationaxis>
+    </body>
+
+
+
+    <!-- HOLES: 121-144/144 -->
+    <body name="hole0121" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.04 0.1213 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0122" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.08 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0123" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.12 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0124" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.16 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0125" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.20 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0126" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.24 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0127" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.28 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0128" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+       <translation>0.32 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0129" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.36 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0130" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.40 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0131" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.44 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0132" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.48 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0133" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.52 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0134" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.56 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0135" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.60 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0136" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.64 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0137" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.68 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0138" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.72 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0139" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.76 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0140" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.80 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0141" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.84 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0142" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.88 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0143" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.92 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+    <body name="hole0144" type="dynamic" enable="false">
+        <geom type="cylinder">
+            <radius>0.003</radius>
+            <height>0.008</height>
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <diffusecolor>.184 .309 .309</diffusecolor>
+            <transparency>0.</transparency>
+            <translation>0 0 0.004</translation>
+        </geom>
+        <translation>0.96 0.12125 0.2350</translation>
+        <rotationaxis>1 0 0 114.2</rotationaxis>
+    </body>
+</Kinbody>

@@ -1,0 +1,11 @@
+<kinbody name="makita_coupler">
+  <body name="makita_coupler">
+    <geom type="box">
+      <extents>0.0315 0.095 0.0075</extents>
+      <diffusecolor>0.6 0.6 0.6</diffusecolor>
+      <ambientcolor>0.6 0.6 0.6</ambientcolor>
+      <rotationaxis>0 0 1 45</rotationaxis>
+      <translation>0.037830 -0.037830 0.0075</translation>
+    </geom>
+  </body>
+</kinbody>

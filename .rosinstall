@@ -1,0 +1,5 @@
+- git: {local-name: criros,          uri: 'https://github.com/crigroup/criros.git',          version: master}
+- git: {local-name: lkh,             uri: 'https://github.com/crigroup/lkh.git',             version: master}
+- git: {local-name: openrave_catkin, uri: 'https://github.com/crigroup/openrave_catkin.git', version: master}
+- git: {local-name: raveutils,       uri: 'https://github.com/crigroup/raveutils.git',       version: master}
+- git: {local-name: robotsp,         uri: 'https://github.com/crigroup/robotsp.git',         version: master}

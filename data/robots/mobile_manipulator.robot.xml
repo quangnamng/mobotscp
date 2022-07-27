@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="mobile_manipulator">
+  
+  <!-- Ridgeback -->
+  <robot prefix="ridgeback_" file="ridgeback_base.robot.xml">
+    <translation>0 0 -0.305</translation> <!-- deck_height + install_plate_height = 0.305m -->
+  </robot>
+
+  <!-- Denso VS087 -->
+  <robot prefix="denso_" file="denso_arm.robot.xml">
+    <translation>0.2115 0 0</translation>
+  </robot>
+
+  <!-- Connect Denso to Ridgeback -->
+  <kinbody>
+    <mass type="custom">
+      <total>3.89</total>
+    </mass>
+    <body name="install_plate" type="dynamic">
+      <geom type="box" modifiable="true">
+        <translation>-0.0315 0 0.0125</translation>
+        <extents>0.15 0.12 0.0125</extents>
+        <diffusecolor>0.4 0.4 0.4</diffusecolor>
+      </geom>
+      <offsetfrom>ridgeback_chassis_link</offsetfrom>
+      <translation>0.2115 0 0.28</translation>
+    </body>
+    <joint name="joint_plate_to_ridgeback" type="hinge" enable="false">
+      <body>ridgeback_chassis_link</body>
+      <body>install_plate</body>
+      <limits>0 0</limits>
+    </joint>
+    <joint name="joint_plate_to_denso" type="hinge" enable="false">
+      <body>install_plate</body>
+      <body>denso_link0</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- Define adjacent links -->
+  <adjacent>install_plate denso_link0</adjacent>
+  <adjacent>install_plate ridgeback_chassis_link</adjacent>
+  <adjacent>install_plate ridgeback_top_link</adjacent>
+</robot>

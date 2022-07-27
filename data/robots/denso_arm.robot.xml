@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="denso_arm">
+
+  <!-- base_link -->
+  <kinbody>
+    <mass>
+      <total>13.052</total>
+    </mass>
+    <body name="link0" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <rotationaxis>1 0 0 90</rotationaxis>
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.8 0.8 0.8</diffuseColor>
+        <render>meshes/denso_arm/base_link.stl 0.001</render>
+        <collision>meshes/denso_arm/base_link.stl 0.001</collision>
+      </geom>
+      <!-- <rotationaxis>0 0 1 -90</rotationaxis> -->
+    </body>
+  </kinbody>
+
+  <!-- link 1 -->
+  <kinbody>
+    <mass>
+      <total>6.041</total>
+    </mass>
+    <body name="link1" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <rotationaxis>1 0 0 90</rotationaxis>
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.8 0.8 0.8</diffuseColor>
+        <render>meshes/denso_arm/J1_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J1_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link0</offsetfrom>
+      <translation>0 0 0.1975</translation>
+    </body>
+    <joint name="j1" type="hinge">
+      <body>link0</body>
+      <body>link1</body>
+      <limitsdeg>-170.0 170.0</limitsdeg>
+      <axis>0 0 1</axis>
+      <maxveldeg>285.0</maxveldeg>
+      <!--<maxtorque>33.8723</maxtorque>-->
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link1</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+  <!-- link 2 -->
+  <kinbody>
+    <mass>
+      <total>16.062</total>
+    </mass>
+    <body name="link2" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <rotationaxis>1 0 0 90</rotationaxis>
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.8 0.8 0.8</diffuseColor>
+        <render>meshes/denso_arm/J2_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J2_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link1</offsetfrom>
+      <translation>0.03 0 0.1975</translation>
+    </body>
+    <joint name="j2" type="hinge">
+      <body>link1</body>
+      <body>link2</body>
+      <limitsdeg>-100.0 135.0</limitsdeg>
+      <axis>0 1 0</axis>
+      <maxveldeg>252.5</maxveldeg>
+      <!--<maxtorque>26.2021</maxtorque>-->
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link2</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+  <!-- link 3 -->
+  <kinbody>
+    <mass>
+      <total>10.781</total>
+    </mass>
+    <body name="link3" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.8 0.8 0.8</diffuseColor>
+        <render>meshes/denso_arm/J3_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J3_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link2</offsetfrom>
+      <translation>0 0 0.445</translation>
+    </body>
+    <joint name="j3" type="hinge">
+      <body>link2</body>
+      <body>link3</body>
+      <limitsdeg>-136.0 153.0</limitsdeg>
+      <axis>0 1 0</axis>
+      <maxveldeg>303.0</maxveldeg>
+      <!--<maxtorque>35.5466</maxtorque>-->
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link3</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+ <!-- link 4 -->
+  <kinbody>
+    <mass>
+      <total>3.458</total>
+    </mass>
+    <body name="link4" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.8 0.8 0.8</diffuseColor>
+        <render>meshes/denso_arm/J4_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J4_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link3</offsetfrom>
+      <translation>-0.02 0 0.287</translation>
+    </body>
+    <joint name="j4" type="hinge">
+      <body>link3</body>
+      <body>link4</body>
+      <limitsdeg>-270.0 270.0</limitsdeg>
+      <axis>0 0 1</axis>
+      <maxveldeg>378.75</maxveldeg>
+      <maxtorque>16.2</maxtorque>
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link4</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+  <!-- link 5 -->
+  <kinbody>
+    <mass>
+      <total>1.46</total>
+    </mass>
+    <body name="link5" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.2 0.2 0.2</diffuseColor>
+        <render>meshes/denso_arm/J5_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J5_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link4</offsetfrom>
+      <translation>0 0.0 0.143</translation>
+    </body>
+    <joint name="j5" type="hinge">
+      <body>link4</body>
+      <body>link5</body>
+      <limitsdeg>-120.0 120.0</limitsdeg>
+      <axis>0 1 0</axis>
+      <maxveldeg>378.75</maxveldeg>
+      <maxtorque>16.2</maxtorque>
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link5</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+  <!-- link 6 -->
+  <kinbody>
+    <mass>
+      <total>0.146</total>
+    </mass>
+    <body name="link6" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+	      <rotationaxis>0 0 1 90</rotationaxis>
+        <diffuseColor>0.2 0.2 0.2</diffuseColor>
+        <render>meshes/denso_arm/J6_mesh.stl 0.001</render>
+        <collision>meshes/denso_arm/J6_mesh.stl 0.001</collision>
+      </geom>
+      <offsetfrom>link5</offsetfrom>
+      <translation>0 0.0 0.08</translation>
+    </body>
+    <joint name="j6" type="hinge">
+      <body>link5</body>
+      <body>link6</body>
+      <limitsdeg>-360.0 360.0</limitsdeg>
+      <axis>0 0 1</axis>
+      <maxveldeg>606.0</maxveldeg>
+      <maxtorque>6.86</maxtorque>
+      <!-- <maxaccel>19.73356519</maxaccel> -->
+      <offsetfrom>link6</offsetfrom>
+      <resolution>1</resolution>
+    </joint>
+  </kinbody>
+
+  <manipulator name="flange">
+    <base>link0</base>
+    <effector>link6</effector>
+    <translation>0 0 0</translation>
+  </manipulator>
+
+  <!-- Define adjacent links -->
+  <adjacent>link0 link1</adjacent>
+  <adjacent>link1 link2</adjacent>
+  <adjacent>link2 link3</adjacent>
+  <adjacent>link3 link4</adjacent>
+  <adjacent>link4 link5</adjacent>
+  <adjacent>link5 link6</adjacent>
+</robot>

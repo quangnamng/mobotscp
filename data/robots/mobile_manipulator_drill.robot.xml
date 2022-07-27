@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="mobile_manipulator_drill">
+  
+  <!-- Denso on Ridgeback -->
+  <robot file="mobile_manipulator.robot.xml">
+  </robot>
+
+  <!-- Connect drill to denso -->
+  <Kinbody file="robots/accessories/makita_coupler.kinbody.xml">
+    <body name="makita_coupler">
+      <offsetfrom>denso_link6</offsetfrom>
+      <translation>-0.0848528 0.0848528 0</translation> <!-- drill's centre to link6's centre: 12cm -->
+    </body>
+    <joint name="joint_denso_coupler" type="hinge" enable="false">
+      <body>denso_link6</body>
+      <body>makita_coupler</body>
+      <limits>0 0</limits>
+    </joint>
+  </Kinbody>
+
+  <!-- Drill -->
+  <Kinbody file="robots/accessories/makita_drill.kinbody.xml">
+    <body name="neck1">
+      <offsetfrom>makita_coupler</offsetfrom>
+    </body>
+    <joint name="joint_coupler_drill" type="hinge" enable="false">
+      <body>makita_coupler</body>
+      <body>neck1</body>
+      <limits>0 0</limits>
+    </joint>
+  </Kinbody>
+
+  <!-- Define the manipulator -->
+  <Manipulator name="drill">
+    <base>denso_link0</base>
+    <effector>drillbit</effector>
+    <translation>0 0 0.0705</translation>
+    <direction>0 0 1</direction>
+  </Manipulator>
+
+  <!-- Define adjacent links -->
+  <adjacent>makita_coupler denso_link6</adjacent>
+  <adjacent>makita_coupler neck1</adjacent>
+</robot>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="ridgeback_base">
+
+  <!-- chassis -->
+  <kinbody>
+    <mass type="custom">
+      <translation>0.012 0.002 0.067</translation>
+      <!--<com>0.012 0.002 0.067</com>-->
+      <total>138</total>
+      <inertia>4.4744 0.03098 0.003647 0.03098 7.1624 0.1228 0.003647 0.1228 4.6155</inertia>
+    </mass>
+    <body name="chassis_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/body.stl 1.0</render>
+        <collision>meshes/ridgeback_base/body-collision.stl 1.0</collision>
+      </geom>
+    </body>
+  </kinbody>
+
+  <!-- left side cover -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="left_side_cover_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>0 0 1 180</RotationAxis>
+        <diffuseColor>0.8 0.8 0.0</diffuseColor>
+        <render>meshes/ridgeback_base/side-cover.stl 1.0</render>
+        <collision>meshes/ridgeback_base/side-cover.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="left_side_cover_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>left_side_cover_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- right side cover -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="right_side_cover_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.8 0.8 0.0</diffuseColor>
+        <render>meshes/ridgeback_base/side-cover.stl 1.0</render>
+        <collision>meshes/ridgeback_base/side-cover.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="right_side_cover_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>right_side_cover_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- front cover -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="front_cover_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/end-cover.stl 1.0</render>
+        <collision>meshes/ridgeback_base/end-cover.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="front_cover_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>front_cover_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- rear_cover -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="rear_cover_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>0 0 1 180</RotationAxis>
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/end-cover.stl 1.0</render>
+        <collision>meshes/ridgeback_base/end-cover.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="rear_cover_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>rear_cover_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- front lights link -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="front_lights_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.9 0.9 0.9</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/lights.stl 1.0</render>
+        <collision>meshes/ridgeback_base/lights.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="front_lights_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>front_lights_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- rear lights link -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="rear_lights_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>0 0 1 180</RotationAxis>
+        <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/lights.stl 1.0</render>
+        <collision>meshes/ridgeback_base/lights.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="rear_lights_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>rear_lights_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- top -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="top_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/top.stl 1.0</render>
+        <collision>meshes/ridgeback_base/top.stl 1.0</collision>
+      </geom>
+    </body>
+    <joint name="top_link_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>top_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- axle -->
+  <kinbody>
+    <mass>
+      <total>0.0</total>
+    </mass>
+    <body name="axle_link" type="dynamic">
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>0 1 0 90</RotationAxis>
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/axle.stl 1.0</render>
+        <collision>meshes/ridgeback_base/axle.stl 1.0</collision>
+      </geom>
+      <offsetfrom>chassis_link</offsetfrom>
+      <translation>0 0 0.05</translation>
+    </body>
+    <joint name="axle_joint" type="hinge" enable="false">
+      <body>chassis_link</body>
+      <body>axle_link</body>
+    </joint>
+  </kinbody>
+
+  <!-- front rocker + front left wheel + front right wheel -->
+  <kinbody>
+    <!-- front rocker -->
+    <body name="front_rocker_link" type="dynamic">
+      <mass type="custom">
+        <RotationAxis>1 0 0 90</RotationAxis>
+        <RotationAxis>0 0 1 90</RotationAxis>
+        <!--<total>10.267</total>-->
+        <total>0</total>
+        <inertia>0.0288 2.20484e-6 -1.3145e-5 2.20484e-6 0.4324 1.8944e-3 -1.3145e-5 1.8944e-3 0.4130</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>1 0 0 90</RotationAxis>
+        <RotationAxis>0 0 1 90</RotationAxis>
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/rocker.stl 1.0</render>
+        <collision>meshes/ridgeback_base/rocker.stl 1.0</collision>
+      </geom>
+      <offsetfrom>axle_link</offsetfrom>
+      <translation>0.319 0 0</translation>
+    </body>
+    <joint name="front_rocker" type="hinge" enable="false">
+      <body>axle_link</body>
+      <body>front_rocker_link</body>
+      <limits>0 0</limits>
+    </joint>
+
+    <!-- front left wheel -->
+    <body name="front_left_wheel_link" type="dynamic">
+      <mass type="custom">
+        <!--<total>2.3</total>-->
+        <total>0.0</total>
+        <inertia>3.3212e-3 0 0 0 6.6424e-3 0 0 0 3.3212e-3</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="cylinder">
+        <!--<RotationAxis>1 0 0 90</RotationAxis>-->
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <height>0.0790</height>
+        <radius>0.065</radius>
+        <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
+        <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+      </geom>
+      <offsetfrom>front_rocker_link</offsetfrom>
+      <translation>0 0.2755 0</translation>
+    </body>
+    <joint name="front_left_wheel" type="hinge" enable="false">
+      <body>front_rocker_link</body>
+      <body>front_left_wheel_link</body>
+      <limits>0 0</limits>
+    </joint>
+
+    <!-- front right wheel -->
+    <body name="front_right_wheel_link" type="dynamic">
+      <mass type="custom">
+        <!--<total>2.3</total>-->
+        <total>0.0</total>
+        <inertia>3.3212e-3 0 0 0 6.6424e-3 0 0 0 3.3212e-3</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="cylinder">
+        <!--<RotationAxis>1 0 0 90</RotationAxis>-->
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <height>0.0790</height>
+        <radius>0.065</radius>
+        <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
+        <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+      </geom>
+      <offsetfrom>front_rocker_link</offsetfrom>
+      <translation>0 -0.2755 0</translation>
+    </body>
+    <joint name="front_right_wheel" type="hinge" enable="false">
+      <body>front_rocker_link</body>
+      <body>front_right_wheel_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+    <!-- rear rocker + rear left wheel + rear right wheel -->
+  <kinbody>
+    <!-- rear rocker -->
+    <body name="rear_rocker_link" type="dynamic">
+      <mass type="custom">
+        <RotationAxis>1 0 0 90</RotationAxis>
+        <RotationAxis>0 0 1 90</RotationAxis>
+        <!--<total>10.267</total>-->
+        <total>0.0</total>
+        <inertia>0.0288 2.20484e-6 -1.3145e-5 2.20484e-6 0.4324 1.8944e-3 -1.3145e-5 1.8944e-3 0.4130</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="trimesh" modifiable="true">
+        <RotationAxis>1 0 0 90</RotationAxis>
+        <RotationAxis>0 0 1 90</RotationAxis>
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <!--<transparency>0.5</transparency>-->
+        <render>meshes/ridgeback_base/rocker.stl 1.0</render>
+        <collision>meshes/ridgeback_base/rocker.stl 1.0</collision>
+      </geom>
+      <offsetfrom>axle_link</offsetfrom>
+      <translation>-0.319 0 0</translation>
+    </body>
+    <joint name="rear_rocker" type="hinge" enable="false">
+      <body>axle_link</body>
+      <body>rear_rocker_link</body>
+      <limits>0 0</limits>
+    </joint>
+
+    <!-- rear left wheel -->
+    <body name="rear_left_wheel_link" type="dynamic">
+      <mass type="custom">
+        <!--<total>2.3</total>-->
+        <total>0.0</total>
+        <inertia>3.3212e-3 0 0 0 6.6424e-3 0 0 0 3.3212e-3</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="cylinder">
+        <!--<RotationAxis>1 0 0 90</RotationAxis>-->
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <height>0.0790</height>
+        <radius>0.065</radius>
+        <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
+        <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+      </geom>
+      <offsetfrom>rear_rocker_link</offsetfrom>
+      <translation>0 0.2755 0</translation>
+    </body>
+    <joint name="rear_left_wheel" type="hinge" enable="false">
+      <body>rear_rocker_link</body>
+      <body>rear_left_wheel_link</body>
+      <limits>0 0</limits>
+    </joint>
+
+    <!-- rear right wheel -->
+    <body name="rear_right_wheel_link" type="dynamic">
+      <mass type="custom">
+        <!--<total>2.3</total>-->
+        <total>0.0</total>
+        <inertia>3.3212e-3 0 0 0 6.6424e-3 0 0 0 3.3212e-3</inertia>
+        <com>0 0 0</com>
+      </mass>
+      <geom type="cylinder">
+        <!--<RotationAxis>1 0 0 90</RotationAxis>-->
+        <diffuseColor>0.15 0.15 0.15</diffuseColor>
+        <height>0.0790</height>
+        <radius>0.065</radius>
+        <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
+        <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+      </geom>
+      <offsetfrom>rear_rocker_link</offsetfrom>
+      <translation>0 -0.2755 0</translation>
+    </body>
+    <joint name="rear_right_wheel" type="hinge" enable="false">
+      <body>rear_rocker_link</body>
+      <body>rear_right_wheel_link</body>
+      <limits>0 0</limits>
+    </joint>
+  </kinbody>
+
+  <!-- Define adjacent links -->
+  <adjacent>chassis_link left_side_cover_link</adjacent>
+  <adjacent>chassis_link right_side_cover_link</adjacent>
+  <adjacent>chassis_link front_cover_link</adjacent>
+  <adjacent>chassis_link rear_cover_link</adjacent>
+  <adjacent>front_cover_link front_lights_link</adjacent>
+  <adjacent>rear_cover_link rear_lights_link</adjacent>
+  <adjacent>chassis_link top_link</adjacent>
+  <adjacent>front_left_wheel_link front_cover_link</adjacent>
+  <adjacent>front_right_wheel_link front_lights_link</adjacent>
+  <adjacent>rear_left_wheel_link rear_cover_link</adjacent>
+  <adjacent>rear_right_wheel_link rear_lights_link</adjacent>
+  <adjacent>front_left_wheel_link chassis_link</adjacent>
+  <adjacent>front_right_wheel_link chassis_link</adjacent>
+  <adjacent>rear_left_wheel_link chassis_link</adjacent>
+  <adjacent>rear_right_wheel_link chassis_link</adjacent>
+
+</robot>
