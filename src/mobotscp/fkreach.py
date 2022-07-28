@@ -164,7 +164,8 @@ def display_mayavi_ori_axes(xcolor=(1, 0, 0), ycolor=(0, 1, 0), zcolor=(0, 0, 1)
     return origin_x, origin_y, origin_z
 
 def display_mayavi_viewpoint(view):
-    print("Azimuth: {} | Elevation: {} | Distance: {} | Focalpoints: {}".format(view[0], view[1], view[2], view[3]))
+    print("mayavi viewer: azimuth: {} | elevation: {} | distance: {} | focalpoints: {}" \
+          .format(view[0], view[1], view[2], view[3]))
 
 
 class GenerateFKR(object):
@@ -599,14 +600,17 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             Trobot = np.dot(Tbaseinv, self.robot.GetTransform())
             self.robot.SetTransform(Trobot)
             # maniplinks = self.getManipulatorLinks(self.manip)
-            # armjoints = self.getOrderedArmJoints()
-            # eetrans = self.manip.GetEndEffectorTransform()[0:3, 3]
-            # ee_length_wrt_j5 = np.sqrt(np.sum((eetrans-armjoints[-2].GetAnchor())**2))
+            armjoints = self.getOrderedArmJoints()
+            eetrans_wrt_j5 = self.manip.GetEndEffectorTransform()[0:3,3] - armjoints[-2].GetAnchor()
+            eeorien = self.manip.GetEndEffectorTransform()[0:3,2]
+            ee_length_wrt_j5 = np.dot(eetrans_wrt_j5, eeorien)
             rot_center_wrt_arm = [0, 0, get_link_offset(self.robot, l0_name, l2_name)[2]]
-        spheres_center_wrt_arm = rot_center_wrt_arm
+        spheres_center_wrt_arm = self.fkr_sampling_dirs[0]*ee_length_wrt_j5 + rot_center_wrt_arm
+        print("spheres_center_wrt_arm = {}".format(spheres_center_wrt_arm))
         # Calculate position relative to robot's link 1 because FKR was calculated with origin at link 1
         l1_wrt_arm = get_link_offset(self.robot, l0_name, l1_name)
         spheres_center_wrt_l1 = spheres_center_wrt_arm - l1_wrt_arm
+        print("spheres_center_wrt_l1 = {}".format(spheres_center_wrt_l1))
 
         # Get indices of valid fkr_3d
         vx, vy, vz = np.where(self.fkr_3d == 1.)
@@ -653,7 +657,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                     r = np.linalg.norm(np.array([x_out, y_out, z_out])-np.array(spheres_center_wrt_l1))
                     outer_xyzr.append([x_out, y_out, z_out, r])        
         # Calculate outer sphere' radius Rmax
-        Rmax = min(np.array(outer_xyzr)[:,3])*(1-safe_margin)
+        Rmax = min(np.array(outer_xyzr)[:,3]) - safe_margin
         print("Rmax = {}".format(Rmax))
 
         # Get inner surface
@@ -689,7 +693,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                             inner_xyzr.append([x_in, y_in, z_in, r])
         # Calculate inner sphere' radius Rmax
         if len(inner_xyzr) > 0:
-            Rmin = max(np.array(inner_xyzr)[:,3])*(1+safe_margin)
+            Rmin = max(np.array(inner_xyzr)[:,3]) + safe_margin
         else: 
             Rmin = 0
         print("Rmin = {}".format(Rmin))

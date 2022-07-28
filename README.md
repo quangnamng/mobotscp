@@ -1,6 +1,5 @@
 # mobotscp
-ROS package for MoboTSCP - Solution to the Mobile robot's Task Sequencing and Clustering Problem 
-(TSCP) based on Travelling Salesman Problem (TSP) and Set Cover Problem (SCP)
+ROS package for MoboTSCP - Solution to the Mobile robot's Task Sequencing and Clustering Problem
 
 
 ## Getting started
@@ -11,7 +10,7 @@ ROS package for MoboTSCP - Solution to the Mobile robot's Task Sequencing and Cl
 sudo apt-get install ros-$ROS_DISTRO-gazebo-ros-pkgs ros-$ROS_DISTRO-gazebo-ros-control
 sudo apt-get install ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers
 ```
-* OpenRAVE 0.9.0 (mobipliant may not work with other versions of OpenRAVE)
+* OpenRAVE 0.9.0 (mobotscp may not work with other versions of OpenRAVE)
 ```
 # clone the repository
 cd && git clone https://github.com/crigroup/openrave-installation.git
@@ -28,43 +27,46 @@ git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 ./install-openrave.sh -j4
 cd && sudo rm -rf openrave-installation
 ```
-* mayavi2: for visualization in Focus Kinematic Reachability solver
+* [RoboTSP](https://github.com/crigroup/robotsp.git)
+```
+cd ~/<catkin_workspace>/src
+git clone https://github.com/crigroup/robotsp.git
+```
+* [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): (optional) for visualization
 ```
 sudo apt install mayavi2
 ```
 
 ### Installation
-Clone and build mobotscp using scripts:
+Clone and install using script: 
 ```
 cd ~/<catkin_workspace>/src
 git clone https://github.com/nqnam1/mobotscp.git
 cd mobotscp
-./install.sh -w <catkin_workspace_name>
+./install.sh -w <catkin_workspace>
 source ~/.bashrc
 ```
-If `-w <catkin_workspace_name>` is not specified, the default is `catkin_ws`.
+Please ignore `-w <catkin_workspace>` if your workspace's name is `catkin_ws`.
 
 
 ## Focus Kinematic Reachability (FKR)
-The FKR file stores all points reachable by the end-effector with end-effector's orientation as 
-described below. File name explained: TODO
+The FKR file stores all points reachable by the robot's end-effector at some orientations 
+as described below. The raw FKR data will then be analyzed to define a "reachable region" 
+(relative to the robot) with analytical geometry called "reachability limits." 
 
-The raw FKR data will then be analyzed to define a "reachable region" (relative to the robot) 
-with analytical geometry. This reachable region is an important part of our compliant controller 
-which minimizes the base movement.
+File name: e.g. `mobile_manipulator_drill_114_148deg`
+* `mobile_manipulator_drill`: robot's name
+* `114_148deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
+ranges from 114 to 148 deg while azimuthal angle is fixed at 0 deg by default.
 
-FKR data is stored in `data/reachability/robot.<robot_id>/` for each robot. 
-To use FKR data, please copy all `robot.*` and `kinematics.*` folders into `~/.openrave/`. 
-If you generate new data, it will also be located inside `~/.openrave/`. 
-
-The script `scripts/solve_fkr.py` demonstrates how to generate FKR, solve for reachability 
-limits, visualize FKR and limits. Please make sure you have the `~/.openrave/` directory with 
-the copied `robot.*` and `kinematics.*` folders inside before running: 
+FKR data is stored in `data/reachability/robot.<robot_id>/` for each robot. To use FKR data, 
+copy all `robot.*` and `kinematics.*` folders from `data/reachability/` into `~/.openrave/`. 
+Newly generated data will also be located in `~/.openrave/`. The script `scripts/analyze_fkr.py` 
+demonstrates how to generate FKR, analyze FKR data for reachability limits, and visualization.
 ```
 rosrun mobotscp solve_fkr.py
 ```
-Some screenshots of the visualization of available FKR data & limits can be found in 
-`data/figs/fkr` directory.
+Some screenshots of the visualization of FKR data & limits can be found in `data/figs/fkr`.
 
 
 ## Simulation demo

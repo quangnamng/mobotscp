@@ -5,7 +5,7 @@ p2
 I00
 sS'generationtime'
 p3
-F33.000576972961426
+F25.150210857391357
 sN(lp4
 cnumpy.core.multiarray
 scalar
