@@ -49,7 +49,7 @@ source ~/.bashrc
 Please ignore `-w <catkin_workspace>` if your workspace's name is `catkin_ws`.
 
 
-## Focus Kinematic Reachability (FKR)
+## Focused Kinematic Reachability (FKR)
 The FKR file stores all points reachable by the robot's end-effector at some orientations 
 as described below. The raw FKR data will then be analyzed to define a "reachable region" 
 (relative to the robot) with analytical geometry called "reachability limits." 

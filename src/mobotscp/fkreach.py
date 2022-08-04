@@ -6,6 +6,7 @@ import baldor
 import numpy as np
 import openravepy as orpy
 import tf.transformations as tr
+from mobotscp import utils
 
 ##############################################################################################################
 # Input: 
@@ -26,13 +27,6 @@ class DrawReachLimits(object):
         self.Xmin = reach_param.Xmin
         self.Zmin = reach_param.Zmin
         self.Zmax = reach_param.Zmax
-
-    def z_rotation(xyz, yaw_rad):
-        rot_matrix = [  [np.cos(yaw_rad), -np.sin(yaw_rad), 0.],
-                        [np.sin(yaw_rad), np.cos(yaw_rad),  0.],
-                        [0.,              0.,               1.]  ]
-        rotated_xyz = np.matmul(rot_matrix, np.transpose(xyz))
-        return np.transpose(rotated_xyz)
 
     def draw_planes(self, env, base_pose):
         """
@@ -63,7 +57,7 @@ class DrawReachLimits(object):
         planes.InitFromBoxes(xyzabc, True)
         # move the boxes according to the robot's pose
         T = tr.euler_matrix(0, 0, base_pose[2], 'sxyz')
-        T[:3, 3] = np.array(base_pose[:2]+[0]) + self.z_rotation(planes_center_wrt_base, base_pose[2])
+        T[:3, 3] = np.array(base_pose[:2]+[0]) + utils.z_rotation(planes_center_wrt_base, base_pose[2])
         planes.SetTransform(T)
         for geom in planes.GetLinks()[0].GetGeometries():
             geom.SetTransparency(0.8)
@@ -91,7 +85,7 @@ class DrawReachLimits(object):
           Handles holding the plot.
         """
         base_pose = list(base_pose)
-        sphere_i_center = np.array(base_pose[:2]+[0]) + self.z_rotation(self.spheres_center_wrt_base, base_pose[2])
+        sphere_i_center = np.array(base_pose[:2]+[0]) + utils.z_rotation(self.spheres_center_wrt_base, base_pose[2])
         centers = []
         for i in range(len(self.radii)):
             centers.append(sphere_i_center)
@@ -169,9 +163,8 @@ def display_mayavi_viewpoint(view):
 
 
 class GenerateFKR(object):
-    def __init__(self, base_approach_dir=[1., 0], sampling_mode="visible-front", xyz_delta=0.04, \
-                 angle_inc=np.pi/6., angle_offset=0., max_radius=None, orientation_list=[], l1_from_ground=0.5175):
-        self.base_approach_dir = base_approach_dir
+    def __init__(self, sampling_mode="visible-front", xyz_delta=0.04, angle_inc=np.pi/6., angle_offset=0., \
+                 max_radius=None, orientation_list=[[1.,0.,0.]], l1_from_ground=0.5175):
         self.sampling_mode = sampling_mode
         self.xyzdelta = xyz_delta
         self.angle_inc = angle_inc
@@ -194,8 +187,9 @@ class ReachLimitParameters(object):
         self.Rmin = Rmin
         self.Rmax = Rmax
         self.radii = [[Rmin], [Rmax]]
-        self.spheres_center_wrt_arm = spheres_center_wrt_arm
-        self.spheres_center_wrt_base = np.array(spheres_center_wrt_arm) + np.array(arm_ori_wrt_base)
+        self.spheres_center_wrt_arm = np.array(spheres_center_wrt_arm)
+        self.arm_ori_wrt_base = np.array(arm_ori_wrt_base)
+        self.spheres_center_wrt_base = self.spheres_center_wrt_arm + self.arm_ori_wrt_base
         # planes' parameters
         self.Xmin_wrt_arm = Xmin_wrt_arm
         self.Xmin = Xmin_wrt_arm + arm_ori_wrt_base[0]
@@ -208,7 +202,7 @@ class ReachLimitParameters(object):
             self.Zmax = None
 
 
-class FocusKinematicReachability(orpy.databases.kinematicreachability.ReachabilityModel):
+class FocusedKinematicReachability(orpy.databases.kinematicreachability.ReachabilityModel):
     def __init__(self, env, robot, param):
         self.env = env
         self.robot = robot
@@ -226,7 +220,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
         self._fkr_databasefile = None
         self.fkr_build_time = None
 
-        super(FocusKinematicReachability, self).__init__(robot=self.robot)
+        super(FocusedKinematicReachability, self).__init__(robot=self.robot)
         self.load()
 
         # Check FKR dataset availability
@@ -236,7 +230,6 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             else:
                 gen_ = param.gen_fkr_param
                 print("Database id [{}] is not found. Generating with params:".format(self.data_id))
-                print("base_approach_dir: {}".format(gen_.base_approach_dir))
                 print("sampling_dirs: {}".format(gen_.sampling_dirs))
                 print("sampling mode: {}".format(gen_.sampling_mode))
                 print("fkr_xyzdelta: {}".format(gen_.xyzdelta))
@@ -244,21 +237,18 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                 print("fkr_angle_offset: {}".format(gen_.angle_offset))
                 print("l1_from_ground: {}m".format(gen_.l1_from_ground))
 
-                if gen_.base_approach_dir is None:
-                    gen_.base_approach_dir = [1., 0]
-                if gen_.sampling_dirs is None:
+                if len(gen_.sampling_dirs)==0:
                     raise ValueError("Please set sampling_dirs")
 
-                self.build_fkr(self.data_id, gen_.base_approach_dir, gen_.sampling_dirs, \
-                               maxradius=gen_.max_radius, fkr_xyzdelta=gen_.xyzdelta, \
-                               fkr_angle_inc=gen_.angle_inc, fkr_angle_offset=gen_.angle_offset, \
-                               sampling_mode=gen_.sampling_mode, l1_from_ground=gen_.l1_from_ground)
+                self.build_fkr(self.data_id, gen_.sampling_dirs, maxradius=gen_.max_radius, \
+                               fkr_xyzdelta=gen_.xyzdelta, fkr_angle_inc=gen_.angle_inc, \
+                               fkr_angle_offset=gen_.angle_offset, sampling_mode=gen_.sampling_mode, \
+                               l1_from_ground=gen_.l1_from_ground)
                 exit()
         else:
             assert self.has_file_name(self.data_id), "Database id [{}] is not found."
             if not self.loadFKR_HDF5(self.data_id):
                 raise ValueError("Failed to load FKR hdf5 with id {}".format(self.data_id))
-            print("base_approach_dir: {}".format(self.base_approach_dir))
             print("sampling_dirs: {}".format(self.fkr_sampling_dirs))
 
     def get_fkr_version(self):
@@ -284,7 +274,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
         insideinds = np.flatnonzero(np.sum(allpoints**2, 1) < maxradius**2)
         return allpoints, insideinds, X.shape, np.array((1.0/delta, nsteps)), grid_extent
 
-    def fkr_pcg(self, sampling_dirs, maxradius=None, fkr_xyzdelta=0.04, fkr_angle_inc=np.pi/6, 
+    def fkr_pcg(self, sampling_dirs, maxradius=None, fkr_xyzdelta=0.04, fkr_angle_inc=np.pi/6, \
                 fkr_angle_offset=0., sampling_mode="visible-front", l1_from_ground=0.5175):
         """
         fkr_angle_inc: Rotation increment when generating 6D pose for each ray direction in radian
@@ -315,7 +305,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                 maxradius = armlength+fkr_xyzdelta*np.sqrt(3.0)*1.05
 
         allpoints, insideinds, shape, self.fkr_pointscale, self.fkr_extent = \
-                    self.focused_sampling(maxradius, fkr_xyzdelta, sampling_mode, l1_from_ground)
+            self.focused_sampling(maxradius, fkr_xyzdelta, sampling_mode, l1_from_ground)
         """
         Each voxel is sampled from all sampling_dirs.
         We sample the reachability of one sampling_dir by discretizing
@@ -376,13 +366,9 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
 
         return producer, consumer, gatherer, len(insideinds)
 
-    def build_fkr(self, database_id, base_approach_dir, sampling_dirs, 
-                                             maxradius=None, fkr_xyzdelta=0.04, 
-                                             fkr_angle_inc=np.pi/6, fkr_angle_offset=0., 
-                                             sampling_mode="visible-front", l1_from_ground=0.5175):
-        self.base_approach_dir = base_approach_dir
+    def build_fkr(self, database_id, sampling_dirs, maxradius=None, fkr_xyzdelta=0.04, fkr_angle_inc=np.pi/6, \
+                  fkr_angle_offset=0., sampling_mode="visible-front", l1_from_ground=0.5175):
         self.fkr_sampling_dirs = sampling_dirs
-
         starttime = time.time()
         producer, consumer, gatherer, numjobs = self.fkr_pcg(sampling_dirs, maxradius, fkr_xyzdelta, \
                                                              fkr_angle_inc, fkr_angle_offset, \
@@ -399,7 +385,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
 
     def get_file_name(self, database_id=None, read=False):
         return orpy.RaveFindDatabaseFile(os.path.join('robot.'+self.robot.GetKinematicsGeometryHash(), \
-                                                      'fkr.'+database_id+self.manip.GetStructureHash()+'.pp'), read)
+                                         'fkr.'+database_id+self.manip.GetStructureHash()+'.pp'), read)
 
     def has_file_name(self, database_id):
         return os.path.isfile(self.get_file_name(database_id=database_id))
@@ -421,7 +407,6 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             f['angle_inc'] = self.fkr_angle_inc
             f['angle_offset'] = self.fkr_angle_offset
             f['sampling_dirs'] = self.fkr_sampling_dirs
-            f['base_approach_dir'] = self.base_approach_dir
             f['build_time'] = self.fkr_build_time
         print("Saved model to {}".format(filename))
 
@@ -448,7 +433,6 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
         try:
             f = h5py.File(filename, 'r')
             if f['version'].value != self.get_fkr_version():
-                #log.error('version is wrong %s!=%s ',f['fkr_version'],self.get_fkr_version())
                 print("Version is wrong {}!={}".format(f['version'].value, self.get_fkr_version()))
                 return False
 
@@ -461,7 +445,6 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             self.fkr_angle_inc = f['angle_inc'].value
             self.fkr_angle_offset = f['angle_offset'].value
             self.fkr_sampling_dirs = f['sampling_dirs'].value
-            self.base_approach_dir = f['base_approach_dir'].value
             self.fkr_build_time = f['build_time'].value
             self._fkr_databasefile = f
             f = None
@@ -475,10 +458,9 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             if f is not None:
                 f.close()
 
-    def visualize(self, j1_offset=None, l0_name='link0', l1_name='link1', 
-                        showlimits=True, reach_param=None, showrobot=True, showori=True, 
-                        valid_fkr_color=(0, 1, 0), valid_fkr_opacity=0.3,
-                        azimuth=None, elevation=None, distance=None, focalpoint=None):
+    def visualize(self, j1_offset=None, l0_name='link0', l1_name='link1', showlimits=True, \
+                  reach_param=None, showrobot=True, showori=True, valid_fkr_color=(0, 1, 0), \
+                  valid_fkr_opacity=0.3, azimuth=None, elevation=None, distance=None, focalpoint=None):
         from mayavi import mlab
         mlab.figure("fkr", fgcolor=(0, 0, 0), bgcolor=(1, 1, 1), size=(768, 768))
         mlab.clf()
@@ -507,7 +489,7 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                             min_y+trans[1]:max_y+trans[1],
                             min_z+trans[2]:max_z+trans[2]]
         fkr_src = mlab.pipeline.scalar_field(X, Y, Z, self.fkr_3d)
-        iso_fkr = mlab.pipeline.iso_surface(fkr_src, contours=[1.0], color=valid_fkr_color,
+        iso_fkr = mlab.pipeline.iso_surface(fkr_src, contours=[1.0], color=valid_fkr_color, \
                                             opacity=valid_fkr_opacity, vmin=0., vmax=1.)
 
         offset = np.array((0, 0, 0))
@@ -519,8 +501,8 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                 baseanchor = self.getOrderedArmJoints()[0].GetAnchor()
                 trimesh = self.env.Triangulate(self.robot)
                 v = trimesh.vertices/self.fkr_xyzdelta
-                mlab.triangular_mesh(v[:, 0]-offset[0], v[:, 1]-offset[1], 
-                                    v[:, 2]-offset[2], trimesh.indices, color=(0.5, 0.5, 0.5))
+                mlab.triangular_mesh(v[:, 0]-offset[0], v[:, 1]-offset[1], v[:, 2]-offset[2], \
+                                     trimesh.indices, color=(0.5, 0.5, 0.5))
 
         # Display origin
         if showori:
@@ -606,11 +588,9 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             ee_length_wrt_j5 = np.dot(eetrans_wrt_j5, eeorien)
             rot_center_wrt_arm = [0, 0, get_link_offset(self.robot, l0_name, l2_name)[2]]
         spheres_center_wrt_arm = self.fkr_sampling_dirs[0]*ee_length_wrt_j5 + rot_center_wrt_arm
-        print("spheres_center_wrt_arm = {}".format(spheres_center_wrt_arm))
         # Calculate position relative to robot's link 1 because FKR was calculated with origin at link 1
         l1_wrt_arm = get_link_offset(self.robot, l0_name, l1_name)
         spheres_center_wrt_l1 = spheres_center_wrt_arm - l1_wrt_arm
-        print("spheres_center_wrt_l1 = {}".format(spheres_center_wrt_l1))
 
         # Get indices of valid fkr_3d
         vx, vy, vz = np.where(self.fkr_3d == 1.)
@@ -658,7 +638,6 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
                     outer_xyzr.append([x_out, y_out, z_out, r])        
         # Calculate outer sphere' radius Rmax
         Rmax = min(np.array(outer_xyzr)[:,3]) - safe_margin
-        print("Rmax = {}".format(Rmax))
 
         # Get inner surface
         inner_xyzr = []
@@ -696,9 +675,10 @@ class FocusKinematicReachability(orpy.databases.kinematicreachability.Reachabili
             Rmin = max(np.array(inner_xyzr)[:,3]) + safe_margin
         else: 
             Rmin = 0
-        print("Rmin = {}".format(Rmin))
 
         reach_param = ReachLimitParameters(Rmin, Rmax, Xmin_wrt_arm, Zmin_wrt_arm, Zmax_wrt_arm, \
                                            spheres_center_wrt_arm, arm_ori_wrt_base)
+        print("reach_param: \n [Rmin, Rmax] = [{}, {}] m, \n spheres_center_wrt_arm = {} m, \n arm_ori_wrt_base = {} m"\
+              .format(reach_param.Rmin, reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
         return reach_param
 # END
