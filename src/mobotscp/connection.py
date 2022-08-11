@@ -1,46 +1,41 @@
 #!/usr/bin/env python
-import numpy as np
+from __future__ import print_function
 from mobotscp import utils
+import numpy as np
 
 ##############################################################################################################
+### Connect targets to the foor points
 # Input:
 #   * alltargets: (array_like) array of orpy.Ray elements representing 5D targets
 #   * floor grid: X, Y = numpy.mgrid[xmin:xmax, ymin:ymax]
 #   * floor.allpoints = numpy.c_[X.flat, Y.flat] * gridsize
 #   * reach_param (fkreach.FocusedKinematicReachability.calculate_reach_limits)
 # Output:
-#   * floor_validinds_i = numpy.flatnonzero(conditions)
-#   * floor_validpoints = floor_allpoints[numpy.unique(floor_validinds)]
-#   * floor_validpoints.append(floor_validpoints_i)
-
-#   * validpoints_targets: (array_like) contains target indices reachable at each validpoint, initial = -1
-#   * floor_reachpoints = floor_allpoints[floor_reachinds]
-#   * reachpoints_targets = validpoints_targets[floor_reachinds]
+#   * floor_validinds_i = numpy.flatnonzero(conditions): indices of floor's points that can reach target i
+#   * floor_validids_per_tar.append(floor_validids_i): sets of floor's valid indices for all targets
+#   * targets_reachable: lists of targets having at least 1 floor's valid index
+#   * targets_unreachable: lists of targets having 0 floor's valid index
 ##############################################################################################################
 
 
 class RectangularFloor(object):
-  def __init__(self, gridsize=0.1, floor_xmin=-1., floor_xmax=0., floor_ymin=-1., floor_ymax=1.):
-    floor_Xmin = floor_xmin//gridsize
-    floor_Xmax = floor_xmax//gridsize
-    floor_Ymin = floor_ymin//gridsize
-    floor_Ymax = floor_ymax//gridsize
-    self.gridsize = gridsize
+  def __init__(self, floor_gridsize=0.1, floor_xrange=[-1., 0.], floor_yrange=[-1., 1.]):
+    [floor_Xmin, floor_Xmax] = np.array(floor_xrange)//floor_gridsize
+    [floor_Ymin, floor_Ymax] = np.array(floor_yrange)//floor_gridsize
     X, Y = np.mgrid[floor_Xmin:floor_Xmax, floor_Ymin:floor_Ymax]
-    self.allfloorpoints = np.c_[X.flat, Y.flat] * gridsize
+    self.floor_allpoints = np.c_[X.flat, Y.flat] * floor_gridsize
 
 
 class ConnectTargets2Floor(object):
-  def __init__(self, targets, floor, reach_param):
+  def __init__(self, targets, floor_allpoints, reach_param):
     # targets
-    self.targets = targets
+    self.targets = np.copy(targets)
     self.targets_theta = np.arccos(self.targets[:,-1])
-    self.targets_see_dir = [ self.targets[:,-3]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2), \
-                           self.targets[:,-2]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2) ]
-    self.targets_phi = np.arctan2( self.targets_see_dir[1], self.targets_see_dir[0] )
+    self.targets_seedir = [ self.targets[:,-3]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2), \
+                            self.targets[:,-2]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2) ]
+    self.targets_phi = np.arctan2( self.targets_seedir[1], self.targets_seedir[0] )
     # floor
-    self.gridsize = floor.gridsize
-    self.allfloorpoints = floor.allfloorpoints
+    self.floor_allpoints = np.copy(floor_allpoints)
     self.Xmin_wrt_arm = reach_param.Xmin_wrt_arm
     self.Zmin_wrt_arm = reach_param.Zmin_wrt_arm
     self.Zmax_wrt_arm = reach_param.Zmax_wrt_arm
@@ -51,28 +46,37 @@ class ConnectTargets2Floor(object):
 
   def connect(self):
     # Sets of floor's valid indices
-    sets_floor_validinds = []
+    floor_validids_per_tar = []
+    targets_reachable = []
+    targets_unreachable = []
     for i in range(len(self.targets)):
       spheres_center_wrt_floor = self.targets[i,:2] - utils.z_rotation(self.spheres_center_wrt_arm, \
-                                                                        self.targets_phi[i])[:2]
-      z_target_wrt_z_center = self.targets[i,2] - self.spheres_center_wrt_arm[2] - self.arm_ori_wrt_base[2]
-      rmin2 = self.Rmin**2 - z_target_wrt_z_center**2
-      rmax2 = self.Rmax**2 - z_target_wrt_z_center**2
-      floor_validinds_cond1 = np.flatnonzero( \
-        np.sum((self.allfloorpoints-spheres_center_wrt_floor)**2, 1) <= rmax2 )
-      floor_validinds_cond2 = np.flatnonzero( \
-        np.sum((self.allfloorpoints[floor_validinds_cond1]-spheres_center_wrt_floor)**2, 1) >= rmin2 )
-      floor_validinds_cond12 = floor_validinds_cond1[floor_validinds_cond2]
-      r_tar_to_point = self.targets[i,:2]-self.allfloorpoints[floor_validinds_cond12]
-      floor_validinds_cond3 = np.flatnonzero( ( r_tar_to_point[:,0]*self.targets_see_dir[0][i] + \
-        r_tar_to_point[:,1]*self.targets_see_dir[1][i] ) >= self.Xmin_wrt_arm )
-      floor_validinds_i = floor_validinds_cond12[floor_validinds_cond3]
-      sets_floor_validinds.append(floor_validinds_i)
-    list_floor_validinds = np.unique(np.concatenate(sets_floor_validinds))
-    # List of floor's valid points
-    list_floor_validpoints = self.allfloorpoints[list_floor_validinds]
-    print("List of floor's valid points = {}".format(list_floor_validpoints))
-    return sets_floor_validinds
-
+                                                                       self.targets_phi[i])[:2]
+      z_tar_wrt_z_arm = self.targets[i,2] - self.arm_ori_wrt_base[2]
+      z_tar_wrt_z_center = z_tar_wrt_z_arm - self.spheres_center_wrt_arm[2]
+      rmin2 = self.Rmin**2 - z_tar_wrt_z_center**2
+      rmax2 = self.Rmax**2 - z_tar_wrt_z_center**2
+      floor_validids_cond1 = np.flatnonzero( \
+        np.sum((self.floor_allpoints-spheres_center_wrt_floor)**2, 1) <= rmax2 )
+      floor_validids_cond2 = np.flatnonzero( \
+        np.sum((self.floor_allpoints[floor_validids_cond1]-spheres_center_wrt_floor)**2, 1) >= rmin2 )
+      floor_validids_cond12 = floor_validids_cond1[floor_validids_cond2]
+      r_tar_to_pt = self.targets[i,:2]-self.floor_allpoints[floor_validids_cond12]
+      floor_validids_cond3 = np.flatnonzero( \
+        ( r_tar_to_pt[:,0]*self.targets_seedir[0][i] + \
+          r_tar_to_pt[:,1]*self.targets_seedir[1][i] ) >= self.Xmin_wrt_arm )
+      floor_validids_i = floor_validids_cond12[floor_validids_cond3]
+      if len(floor_validids_i)==0 or z_tar_wrt_z_arm>self.Zmax_wrt_arm or z_tar_wrt_z_arm<self.Zmin_wrt_arm:
+        targets_unreachable.append(i)
+        floor_validids_per_tar.append([])
+      else:
+        targets_reachable.append(i)
+        floor_validids_per_tar.append(floor_validids_i)
+    print("--Connection finished successfully, results: \nList of targets reachable = \n{}".format(targets_reachable))
+    print("List of targets unreachable = \n{}".format(targets_unreachable))
+    # List of all floor's valid indices & corresponding points
+    floor_validids = np.unique(np.concatenate(floor_validids_per_tar)).astype(int).tolist()
+    print("List of floor's valid indices = \n{}".format(floor_validids))
+    return floor_validids_per_tar, floor_validids, targets_reachable, targets_unreachable
 
 # END

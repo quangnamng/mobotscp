@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-import os
-import h5py
-import time
+from __future__ import print_function
+from mobotscp import utils
 import baldor
+import h5py
 import numpy as np
 import openravepy as orpy
+import os
 import tf.transformations as tr
-from mobotscp import utils
+import time
 
 ##############################################################################################################
+### Generate and analyze robot's Focused Kinematic Reachability (FKR)
 # Input: 
 #   * robot model
 #   * a set of orientations [sin(theta), 0, cos(theta)] with theta = polar angle
@@ -249,7 +251,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
             assert self.has_file_name(self.data_id), "Database id [{}] is not found."
             if not self.loadFKR_HDF5(self.data_id):
                 raise ValueError("Failed to load FKR hdf5 with id {}".format(self.data_id))
-            print("sampling_dirs: {}".format(self.fkr_sampling_dirs))
+            print("sampling_dirs: \n{}".format(self.fkr_sampling_dirs))
 
     def get_fkr_version(self):
         return self.fkr_version
@@ -448,7 +450,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
             self.fkr_build_time = f['build_time'].value
             self._fkr_databasefile = f
             f = None
-            print("Loaded FKR HDF5 with id: {}".format(database_id))
+            print("--Loaded FKR HDF5 with id: {}".format(database_id))
             return self.has_fkr()
 
         except Exception as e:
@@ -678,7 +680,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
 
         reach_param = ReachLimitParameters(Rmin, Rmax, Xmin_wrt_arm, Zmin_wrt_arm, Zmax_wrt_arm, \
                                            spheres_center_wrt_arm, arm_ori_wrt_base)
-        print("reach_param: \n [Rmin, Rmax] = [{}, {}] m, \n spheres_center_wrt_arm = {} m, \n arm_ori_wrt_base = {} m"\
-              .format(reach_param.Rmin, reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
+        print("--FKR solver finished successfully, results: \nreach_param: \n  [Rmin, Rmax] = [{}, {}] m, \
+              \n  spheres_center_wrt_arm = {} m, \n  arm_ori_wrt_base = {} m".format(reach_param.Rmin, \
+              reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
         return reach_param
 # END

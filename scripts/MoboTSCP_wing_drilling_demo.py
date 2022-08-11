@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from mobotscp import fkreach, connection, geoscp, utils
 import IPython
 import logging
 import numpy as np
@@ -6,10 +7,9 @@ import openravepy as orpy
 import signal
 import time
 import tf.transformations as tr
-# utils
+#CRI
 import criutils as cu
 import raveutils as ru
-from mobotscp import fkreach, connection, utils
 
 ##############################################################################################################
 # Input: 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
   signal.signal(signal.SIGINT, exit_handler)
 
   # Configure the logger
-  logger = logging.getLogger('MoboTSCP_wing_drilling_demo')
+  logger = logging.getLogger('MoboTSCP_wing_drilling')
   cu.logger.initialize_logging(format_level=logging.INFO)
 
   # Load the OpenRAVE environment
@@ -62,12 +62,15 @@ if __name__ == "__main__":
   targets_ray = []
   targets_array = []
   targets_theta = []
+  max_no_tar = 288
+  i_tar = 0
   for link in wing.GetLinks():
     lname = link.GetName()
-    if lname.startswith('hole'):
+    if lname.startswith('hole') and i_tar<max_no_tar:
       targets_ray.append( ru.conversions.to_ray(link.GetTransform()) )
       targets_array.append( utils.to_array(link.GetTransform()) )
       targets_theta.append( np.arccos(link.GetTransform()[2,2]) )
+      i_tar += 1
   targets_array = np.vstack(targets_array)
   logger.info("No of targets: {}".format(len(targets_ray)))
 
@@ -101,13 +104,18 @@ if __name__ == "__main__":
   #fkr.visualize(l0_name='denso_link0', l1_name='denso_link1', showlimits=True, reach_param=reach_param)
 
   # Define and discretize the floor
-  floor = connection.RectangularFloor(0.1, -1.0, -0.3, -1.5, 1.5)
+  floor = connection.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1.0, -0.2], floor_yrange=[-1.5, 1.5])
+  floor_allpoints = floor.floor_allpoints
 
   # Connect targets to floor points
-  tar2floor = connection.ConnectTargets2Floor(targets_array, floor, reach_param)
-  sets_floor_validinds = tar2floor.connect()
+  tar2floor = connection.ConnectTargets2Floor(targets_array, floor_allpoints, reach_param)
+  floor_validids_per_tar, floor_validids, targets_reachable, targets_unreachable = tar2floor.connect()
 
   # geoSCP: find the least number of points on floor to cover all targets
+  floor_chosenids, cost, SCPtime = geoscp.solve_geoSCP(floor_validids_per_tar, floor_validids, targets_reachable, \
+                                                    solver='SCPy', maxiters=20)
+  floor_chosenpoints = floor_allpoints[floor_chosenids]
+  logger.info("List of floor's chosen points = \n{}".format(floor_chosenpoints))
 
   # # Viewer
   # env.SetDefaultViewer()

@@ -2,7 +2,7 @@
 import numpy as np
 
 ##############################################################################################################
-# Useful functions 
+# Useful utility functions 
 ##############################################################################################################
 
 
@@ -12,6 +12,7 @@ def z_rotation(xyz, yaw_rad):
                  [0.,              0.,               1.] ]
   rotated_xyz = np.matmul(rot_matrix, np.transpose(xyz))
   return np.transpose(rotated_xyz)
+
 
 def to_array(transform):
   """
