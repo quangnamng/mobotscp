@@ -6,6 +6,7 @@ from SetCoverPy import setcover as scp
 import copy
 import math
 import numpy as np
+import tf.transformations as tr
 
 ##############################################################################################################
 ### Solve the geometric Set Cover Problem (geoSCP)
@@ -129,8 +130,8 @@ def solver_greedy(n, m, E, maxiters=20):
   return sol, mincost
 
 
-def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
-                 max_phidiff=np.pi/6, solver='SCPy', SCP_maxiters=20, maxiters=200):
+def solve_geoSCP(targets, targets_reachids, floor, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
+                 max_phidiff=np.pi/6, solver='SCPy', SCP_maxiters=20, cluster_maxiters=200):
   ### Cluster points: solve SCP to find the least number of points on floor to cover all targets
   floor_validids = np.unique(np.concatenate(floor_validids_per_tar)).astype(int).tolist()
   n, m, E, S = get_math_model(floor_validids_per_tar, floor_validids, targets_reachids)
@@ -146,7 +147,7 @@ def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_
   else:
     raise ValueError("The specified SCP solver is not supported. Valid values: solver='SCPy','greedy','LPr'")
   floor_chosenids = np.array(floor_validids)[np.flatnonzero(sol)]
-  floor_chosenpoints = floor_allpoints[floor_chosenids].tolist()
+  floor_chosenpoints = floor.floor_allpoints[floor_chosenids].tolist()
   print("  * chosen set indices = {}".format(floor_chosenids))
   print("  * min total cost = {}".format(cost))
 
@@ -176,7 +177,7 @@ def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_
   i = 0
   count = 0
   length = len(phidiff_per_chosenpt)
-  while i < length and i_check < maxiters:
+  while i < length and i_check < cluster_maxiters:
     i_check += 1
     if phidiff_per_chosenpt[i] <= max_phidiff and tarids_per_chosenpt[i] and count < (length-i):
       # add current set into clusters
@@ -242,9 +243,11 @@ def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_
       floor_chosenpoints[-1] = copypoint
       count += 1
   # > check maxiters
-  if i_check >= maxiters:
+  if i_check >= cluster_maxiters:
     raise ValueError(("geoSCP failed: max iterations ({}) reached during assigning targets into clusters. " \
-                      "Please increase 'maxiters' value.").format(maxiters))
+                      "Please increase 'maxiters' value.").format(cluster_maxiters))
+
+  ### Results
   # > check results
   tar_check = 0
   for i in range(len(clusters)):
@@ -252,6 +255,12 @@ def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_
   if tar_check != len(targets_reachids):
     raise ValueError(("geoSCP failed: number of targets in clusters ({}) does not match " \
                       "number of reachable targets ({}).").format(tar_check, len(targets_reachids)))
+  # > calculate base transform
+  Tbase = []
+  for i in range(len(base_poses)):
+    T = tr.euler_matrix(0, 0, base_poses[i][2], 'sxyz')
+    T[:3,3] = np.array(list(base_poses[i][:2])+[floor.floor_z])
+    Tbase.append(T)
   # > finalize results
   clusters = np.array(clusters)
   base_poses = np.array(base_poses)
@@ -261,6 +270,6 @@ def solve_geoSCP(targets, targets_reachids, floor_allpoints, floor_validids_per_
   print("  * clusters of targets = \n{}".format(clusters))
   print("  * corresponding arm's origin at (x[m], y[m]) = \n{}".format(arm_oris))
   print("  * corresponding base poses (x[m], y[m], yaw[rad]) = \n{}".format(base_poses))
-  return clusters, arm_oris, base_poses
+  return clusters, arm_oris, base_poses, Tbase
 
 # END

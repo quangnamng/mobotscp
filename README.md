@@ -32,6 +32,10 @@ cd && sudo rm -rf openrave-installation
 cd ~/<catkin_workspace>/src
 git clone https://github.com/crigroup/robotsp.git
 ```
+* Install [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): a python SCP solver
+```
+pip install SetCoverPy
+```
 * Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html) (optional): for visualization
 ```
 sudo apt install mayavi2

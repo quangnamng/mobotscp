@@ -42,10 +42,11 @@ def add_orien_to_targets(transform, yaw):
 
 
 class RectangularFloor(object):
-  def __init__(self, floor_gridsize=0.1, floor_xrange=[-1., 0.], floor_yrange=[-1., 1.]):
+  def __init__(self, floor_gridsize=0.1, floor_xrange=[-1., 0.], floor_yrange=[-1., 1.], floor_z=0.):
     [floor_Xmin, floor_Xmax] = np.array(floor_xrange)//floor_gridsize
     [floor_Ymin, floor_Ymax] = np.array(floor_yrange)//floor_gridsize
     X, Y = np.mgrid[floor_Xmin:floor_Xmax, floor_Ymin:floor_Ymax]
     self.floor_allpoints = np.c_[X.flat, Y.flat] * floor_gridsize
+    self.floor_z = floor_z
 
 # END

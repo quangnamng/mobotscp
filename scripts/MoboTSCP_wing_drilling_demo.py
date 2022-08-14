@@ -23,7 +23,7 @@ import tf.transformations as tr
 
 
 def exit_handler(signum, frame):
-  print("[ERROR] Ctrl+C was pressed, Exiting...")
+  print("[ERROR] Ctrl+C was pressed, exiting...")
   env.Reset()
   env.Destroy()
   exit()
@@ -48,15 +48,31 @@ if __name__ == "__main__":
 
   # Setup robot and manipulator
   robot = env.GetRobot('robot')
-  manipulator = robot.SetActiveManipulator('drill')
-  # TODO: set active DOFs, home config, velocity limits
-
-  # Load IKFast and links stats
+  manip = robot.SetActiveManipulator('drill')
+  robot.SetActiveDOFs(manip.GetArmIndices(), \
+                      robot.DOFAffine.X|robot.DOFAffine.Y|robot.DOFAffine.RotationAxis,[0,0,1])
+  # > home config
+  base_home = [-2.0, 0., 0.]   # (x, y, yaw)
+  arm_home = np.deg2rad([0, -20, 130, 0, 70, 0])
+  qhome = np.append(arm_home, base_home)
+  with env:
+    robot.SetActiveDOFValues(qhome)
+    Thome = robot.GetTransform()
+    phome = manip.GetEndEffectorTransform()[:3,3]
+  # > load IKFast and links stats
   iktype = orpy.IkParameterizationType.Transform6D
   if not ru.kinematics.load_ikfast(robot, iktype):
     logger.error('Failed to load IKFast {0}'.format(iktype.name))
     raise IOError
   success = ru.kinematics.load_link_stats(robot, xyzdelta=0.04)
+  # > set velocity & acceleration limits
+  velocity_limits = (robot.GetDOFVelocityLimits()*0.1).tolist()
+  acceleration_limits = [5., 4.25, 4.25, 5.25, 6., 8.]
+  robot.SetDOFVelocityLimits(velocity_limits)
+  robot.SetDOFAccelerationLimits(acceleration_limits)
+  velocity_limits.extend([0.3, 0.3, 0.3])
+  acceleration_limits.extend([0.2, 0.2, 0.2])
+
 
   # Register the targets
   wing = env.GetKinBody('wing')
@@ -67,7 +83,8 @@ if __name__ == "__main__":
   for link in wing.GetLinks():
     lname = link.GetName()
     if lname.startswith('hole') and i_tar<max_no_tar:
-      azimuth = np.deg2rad((i_tar%24)*4-46)
+      azimuth = np.deg2rad(46-(i_tar%24)*4)
+      #azimuth = 0.
       transform = mtscp.utils.add_orien_to_targets(link.GetTransform(), azimuth)
       targets_ray.append( ru.conversions.to_ray(transform) )
       targets_array.append( mtscp.utils.to_array(transform) )
@@ -75,6 +92,11 @@ if __name__ == "__main__":
   targets_array = np.vstack(targets_array)
   targets_theta = np.arccos(targets_array[:,-1])
   logger.info("No of targets: {}".format(len(targets_ray)))
+
+  # Define and discretize the floor
+  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 0.3], \
+                                       floor_yrange=[-1., 1.], floor_z = 0.)
+
 
   # FKR parameters
   # > sample orientations
@@ -103,17 +125,21 @@ if __name__ == "__main__":
                                            arm_ori_wrt_base=[0.2115, 0., 0.320], safe_margin=0.05, \
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
-  # Define and discretize the floor
-  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 0.3], floor_yrange=[-1., 1.])
-  floor_allpoints = floor.floor_allpoints
 
   # MoboTSCP solver
-  solver = mtscp.solver.MoboTSCP(targets_array, floor_allpoints, reach_param)
-  output = solver.solve(SCP_solver='SCPy', SCP_maxiters=20, maxiters=100)
+  # > SCP parameters
+  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', SCP_maxiters=20, cluster_maxiters=100)
+  # > TODO: TSP parameters
+  tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome)
+
+  # > solve
+  solver = mtscp.solver.MoboTSCP(robot, targets_array, floor, reach_param, scp_param, tsp_param)
+  output = solver.solve()
   # > extract info
   logger.info("MoboTSP solver finished successfully:")
   logger.info("* number of clusters: {}".format(output["clusters_no"]))
   logger.info("* cluster_time: {} s".format(output["cluster_time"]))
+
 
   # Viewer
   env.SetDefaultViewer()
@@ -125,13 +151,54 @@ if __name__ == "__main__":
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])
 
-  # Visualize clusters
+  # Visualize clusters of targets
+  arrows = []
+  points = []
+  axes = []
+  tour = []
+  colors = []
+  colors.append((0., 1., 1.))
+  colors.append((1., 0., 1.))
+  colors.append((1., 1., 0.))
+  colors.append((1., 0., 0.))
+  colors.append((0., 1., 0.))
+  colors.append((0., 0., 1.))
+  colors.append((1., 1., 1.))
+  colors.append((0.1, 0.1, 0.1))
   clusters_no = output["clusters_no"]
-  draws = []
-  for i in range(clusters_no):
-    tars = targets_array[output["clusters"][i]]
-    for j in range(len(tars)):
-      draws.append( ru.visual.draw_point(env, tars[j], 4, (np.sqrt(1.-(i/clusters_no)**2), (i+1)/clusters_no, 0.)) )
+  base_poses = output["base_poses"]
+  base_tour = output["base_tour"]
+  for k in range(clusters_no):
+    i = base_tour[k]
+    # > draw arrows on targets
+    for j in range(len(output["clusters"][i])):
+      arrow_len = 0.05
+      tar_ray = targets_ray[output["clusters"][i][j]]
+      tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+      arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., color=colors[i]) )
+    # > draw points at the base poses
+    base_xyz = np.array(list(base_poses[i][:2])+[0])
+    points.append( ru.visual.draw_point(env=env, point=base_xyz, size=20, color=colors[i]) )
+    # > draw axes at the base poses
+    base_trans = tr.euler_matrix(0, 0, base_poses[i][2], 'sxyz')
+    base_trans[:3,3] = base_xyz
+    axes.append( ru.visual.draw_axes(env=env, transform=base_trans, dist=0.2, linewidth=4) )
+    # > draw arrows representing base tour
+    if k < len(base_poses)-1:
+      base_xyz_next = np.array(list(base_poses[base_tour[k+1]][:2])+[0])
+      tour_len = np.linalg.norm(base_xyz_next-base_xyz)
+      tour_dir = (base_xyz_next-base_xyz)/tour_len
+      tour_ray = orpy.Ray(base_xyz, tour_dir)
+      tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, color=colors[i]) )
+  # > draw the reachability limits that bound each cluster
+  # drawer = mtscp.fkreach.DrawReachLimits(reach_param)
+  # drawer.draw_limits(env, base_poses[0])
+
+
+  # TODO: Execute the trajectories
+  logger.info("Executing the trajectories...")
+
+
 
 
   # Clear and exit

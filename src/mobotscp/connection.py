@@ -20,14 +20,15 @@ import numpy as np
 
 
 class ConnectTargets2Floor(object):
-  def __init__(self, targets, floor_allpoints, reach_param):
+  def __init__(self, targets, floor, reach_param):
     # targets
     self.targets = copy.copy(targets)
     self.targets_seedir = [ self.targets[:,-3]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2), \
                             self.targets[:,-2]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2) ]
     self.targets_phi = np.arctan2( self.targets_seedir[1], self.targets_seedir[0] )
     # floor
-    self.floor_allpoints = copy.copy(floor_allpoints)
+    self.floor_allpoints = copy.copy(floor.floor_allpoints)
+    self.floor_z = floor.floor_z
     # reach parameters
     self.Xmin_wrt_arm = reach_param.Xmin_wrt_arm
     self.Zmin_wrt_arm = reach_param.Zmin_wrt_arm
@@ -45,7 +46,7 @@ class ConnectTargets2Floor(object):
     for i in range(len(self.targets)):
       spheres_center_wrt_floor = self.targets[i,:2] - utils.z_rotation(self.spheres_center_wrt_arm, \
                                                                        self.targets_phi[i])[:2]
-      z_tar_wrt_z_arm = self.targets[i,2] - self.arm_ori_wrt_base[2]
+      z_tar_wrt_z_arm = self.targets[i,2] - self.arm_ori_wrt_base[2] - self.floor_z
       z_tar_wrt_z_center = z_tar_wrt_z_arm - self.spheres_center_wrt_arm[2]
       rmin2 = self.Rmin**2 - z_tar_wrt_z_center**2
       rmax2 = self.Rmax**2 - z_tar_wrt_z_center**2
