@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import copy
 import numpy as np
 
 ##############################################################################################################
@@ -30,5 +31,21 @@ def to_array(transform):
   """
   array = np.ravel( [transform[:3,3], transform[:3,2]] )
   return array
+
+
+def add_orien_to_targets(transform, yaw):
+  new_tran = copy.copy(transform)
+  orient = np.array(transform[:3,2])
+  new_orient = z_rotation(orient, yaw)
+  new_tran[:3,2] = new_orient
+  return new_tran
+
+
+class RectangularFloor(object):
+  def __init__(self, floor_gridsize=0.1, floor_xrange=[-1., 0.], floor_yrange=[-1., 1.]):
+    [floor_Xmin, floor_Xmax] = np.array(floor_xrange)//floor_gridsize
+    [floor_Ymin, floor_Ymax] = np.array(floor_yrange)//floor_gridsize
+    X, Y = np.mgrid[floor_Xmin:floor_Xmax, floor_Ymin:floor_Ymax]
+    self.floor_allpoints = np.c_[X.flat, Y.flat] * floor_gridsize
 
 # END

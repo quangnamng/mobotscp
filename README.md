@@ -27,18 +27,19 @@ git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 ./install-openrave.sh -j4
 cd && sudo rm -rf openrave-installation
 ```
-* [RoboTSP](https://github.com/crigroup/robotsp.git)
+* Clone [RoboTSP](https://github.com/crigroup/robotsp.git): a Robotic TSP solver
 ```
 cd ~/<catkin_workspace>/src
 git clone https://github.com/crigroup/robotsp.git
 ```
-* [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): (optional) for visualization
+* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html) (optional): for visualization
 ```
 sudo apt install mayavi2
 ```
 
 ### Installation
-Clone and install using script: 
+After installing all prerequisites, clone [mobotscp](https://github.com/nqnam1/mobotscp.git) 
+and install it using the provided script: 
 ```
 cd ~/<catkin_workspace>/src
 git clone https://github.com/nqnam1/mobotscp.git
@@ -50,16 +51,16 @@ Please ignore `-w <catkin_workspace>` if your workspace's name is `catkin_ws`.
 
 
 ## Focused Kinematic Reachability (FKR)
-The FKR file stores all points reachable by the robot's end-effector at some orientations 
-as described below. The raw FKR data will then be analyzed to define a "reachable region" 
-(relative to the robot) with analytical geometry called "reachability limits." 
+The FKR data are saved in .h5py/.pp files which store all points reachable by the robot's end-effector 
+at some orientations as described below. The raw FKR data will then be analyzed to define a "reachable 
+region" (relative to the robot) with analytical geometry called "reachability limits." 
 
-File name: e.g. `mobile_manipulator_drill_114_148deg`
+File name: e.g. `fkr.mobile_manipulator_drill_114_148deg<auto_ID_number>.pp`
 * `mobile_manipulator_drill`: robot's name
 * `114_148deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
 ranges from 114 to 148 deg while azimuthal angle is fixed at 0 deg by default.
 
-FKR data is stored in `data/reachability/robot.<robot_id>/` for each robot. To use FKR data, 
+FKR data are stored in `data/reachability/robot.<robot_id>/` for each robot. To use FKR data, 
 copy all `robot.*` and `kinematics.*` folders from `data/reachability/` into `~/.openrave/`. 
 Newly generated data will also be located in `~/.openrave/`. The script `scripts/analyze_fkr.py` 
 demonstrates how to generate FKR, analyze FKR data for reachability limits, and visualization.
@@ -87,20 +88,18 @@ rosdep update --include-eol-distros && \
 sudo rosdep install --rosdistro $ROS_DISTRO --ignore-src --from-paths . -y
 ```
 
-* `No module named <module_name>`: if all dependences have been installed but some python2 
-libraries are still missing, you can install them manually by 
-`pip install --no-deps <module_name>==<version>`. Sometimes the latest version cannot be 
-installed, so you may need to search for the version that supports python 2.7.12 (in Ubuntu 
-16.04) or 2.7.17 (in Ubuntu 18.04). The flag `--no-deps` is important especially in Ubuntu 16.04 
-since its `pip`'s version is no longer supported and cannot be upgraded.
+* `No module named <module_name>`: if all dependences have been installed but some python2 modules/
+libraries are still missing, you can install them manually by `pip install <module_name>==<version>`. 
+Sometimes the latest version cannot be installed, so you may need to search for the version that supports 
+python 2.7.12 (in Ubuntu 16.04) or 2.7.17 (in Ubuntu 18.04). You may want to try `pip install --no-deps` 
+when `pip install` fails especially in Ubuntu 16.04 since its `pip`'s version is no longer supported.
 
-* Unable to load `VTK viewer for mayavi2`: you will not be able to visualize FKR & limits but, 
-as long as you have installed mayavi2, `rosrun mobotscp solve_fkr.py` should still work to 
-generate new FKR data or solve FKR data for reachability limits.
+* Unable to load `VTK viewer for mayavi2`: you may not be able to view the FKR visualization 
+but it will not affect the codes that generate and/or analyze FKR data.
 
 * `IOError: Unable to create file` when saving/loading .h5py/.pp files: please make sure you 
 have permission to create/modify files into the desired directory (`~/.openrave` for example) 
-and its subdirectories by `sudo chown -R <your_user_name> <directory_path>`.
+and its subdirectories by `sudo chown -R <user_name> <directory_path>`.
 
 
 ## Maintainer

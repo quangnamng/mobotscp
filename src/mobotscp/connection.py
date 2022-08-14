@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from mobotscp import utils
+import copy
 import numpy as np
 
 ##############################################################################################################
@@ -18,24 +19,16 @@ import numpy as np
 ##############################################################################################################
 
 
-class RectangularFloor(object):
-  def __init__(self, floor_gridsize=0.1, floor_xrange=[-1., 0.], floor_yrange=[-1., 1.]):
-    [floor_Xmin, floor_Xmax] = np.array(floor_xrange)//floor_gridsize
-    [floor_Ymin, floor_Ymax] = np.array(floor_yrange)//floor_gridsize
-    X, Y = np.mgrid[floor_Xmin:floor_Xmax, floor_Ymin:floor_Ymax]
-    self.floor_allpoints = np.c_[X.flat, Y.flat] * floor_gridsize
-
-
 class ConnectTargets2Floor(object):
   def __init__(self, targets, floor_allpoints, reach_param):
     # targets
-    self.targets = np.copy(targets)
-    self.targets_theta = np.arccos(self.targets[:,-1])
+    self.targets = copy.copy(targets)
     self.targets_seedir = [ self.targets[:,-3]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2), \
                             self.targets[:,-2]/np.sqrt(self.targets[:,-3]**2+self.targets[:,-2]**2) ]
     self.targets_phi = np.arctan2( self.targets_seedir[1], self.targets_seedir[0] )
     # floor
-    self.floor_allpoints = np.copy(floor_allpoints)
+    self.floor_allpoints = copy.copy(floor_allpoints)
+    # reach parameters
     self.Xmin_wrt_arm = reach_param.Xmin_wrt_arm
     self.Zmin_wrt_arm = reach_param.Zmin_wrt_arm
     self.Zmax_wrt_arm = reach_param.Zmax_wrt_arm
@@ -72,11 +65,9 @@ class ConnectTargets2Floor(object):
       else:
         targets_reachable.append(i)
         floor_validids_per_tar.append(floor_validids_i)
-    print("--Connection finished successfully, results: \nList of targets reachable = \n{}".format(targets_reachable))
-    print("List of targets unreachable = \n{}".format(targets_unreachable))
-    # List of all floor's valid indices & corresponding points
-    floor_validids = np.unique(np.concatenate(floor_validids_per_tar)).astype(int).tolist()
-    print("List of floor's valid indices = \n{}".format(floor_validids))
-    return floor_validids_per_tar, floor_validids, targets_reachable, targets_unreachable
+    print("--Connection finished successfully:")
+    print("  * Number of targets reachable = {}/{}".format(len(targets_reachable), len(self.targets)))
+    print("  * Number of targets unreachable = {}/{}".format(len(targets_unreachable), len(self.targets)))
+    return floor_validids_per_tar, targets_reachable, targets_unreachable
 
 # END

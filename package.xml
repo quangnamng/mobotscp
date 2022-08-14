@@ -13,11 +13,19 @@
   <depend>robotsp</depend>
 
   <exec_depend>baldor</exec_depend>
+  <exec_depend>python-collections</exec_depend>
+  <exec_depend>python-copy</exec_depend>
   <exec_depend>python-h5py</exec_depend>
+  <exec_depend>python-math</exec_depend>
   <exec_depend>python-matplotlib</exec_depend>
   <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-os</exec_depend>
   <exec_depend>python-scipy</exec_depend>
+  <exec_depend>python-SetCoverPy</exec_depend>
+  <exec_depend>python-signal</exec_depend>
   <exec_depend>python-sklearn</exec_depend>
+  <exec_depend>python-tf</exec_depend>
+  <exec_depend>python-time</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

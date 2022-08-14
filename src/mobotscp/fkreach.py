@@ -184,7 +184,7 @@ class FKRParameters(object):
 
 class ReachLimitParameters(object):
     def __init__(self, Rmin=0.5, Rmax=1.0, Xmin_wrt_arm=0.5, Zmin_wrt_arm=0.75, Zmax_wrt_arm=None, \
-                 spheres_center_wrt_arm=[0., 0., 0.1975], arm_ori_wrt_base=[0.2115, 0., 0.320]):
+                 spheres_center_wrt_arm=[0., 0., 0.1975], arm_ori_wrt_base=[0.2115, 0., 0.32], max_phidiff=np.pi/6):
         # spheres' parameters
         self.Rmin = Rmin
         self.Rmax = Rmax
@@ -202,6 +202,8 @@ class ReachLimitParameters(object):
             self.Zmax = Zmax_wrt_arm + arm_ori_wrt_base[2]
         else:
             self.Zmax = None
+        # max_phidiff
+        self.max_phidiff = max_phidiff
 
 
 class FocusedKinematicReachability(orpy.databases.kinematicreachability.ReachabilityModel):
@@ -238,10 +240,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 print("fkr_angle_inc: {}".format(gen_.angle_inc))
                 print("fkr_angle_offset: {}".format(gen_.angle_offset))
                 print("l1_from_ground: {}m".format(gen_.l1_from_ground))
-
                 if len(gen_.sampling_dirs)==0:
                     raise ValueError("Please set sampling_dirs")
-
                 self.build_fkr(self.data_id, gen_.sampling_dirs, maxradius=gen_.max_radius, \
                                fkr_xyzdelta=gen_.xyzdelta, fkr_angle_inc=gen_.angle_inc, \
                                fkr_angle_offset=gen_.angle_offset, sampling_mode=gen_.sampling_mode, \
@@ -494,6 +494,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         iso_fkr = mlab.pipeline.iso_surface(fkr_src, contours=[1.0], color=valid_fkr_color, \
                                             opacity=valid_fkr_opacity, vmin=0., vmax=1.)
 
+        # Display robot
         offset = np.array((0, 0, 0))
         if showrobot:
             with self.robot:
@@ -512,7 +513,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
 
         # Display limit planes & spheres
         if showlimits and reach_param is not None:
-            # Display minimum/maximum Z plane & minimum X plane
+            # > display minimum/maximum Z plane & minimum X plane
             y_off = voxel_unit_from_meter(0.0, self.fkr_xyzdelta)
             yext = voxel_unit_from_meter(1.0, self.fkr_xyzdelta)
             if reach_param.Zmin_wrt_arm is not None:
@@ -544,8 +545,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 hpy = np.reshape(hpy, (2, 2))
                 hpz = np.reshape(hpz, (2, 2))
                 xmin_plane = mlab.mesh(hpx, hpy, hpz, color=(0, 0, 1), opacity=0.3, name='zmin-plane')
-
-            # Display limit spheres
+            # > display limit spheres
             spheres_center_x = voxel_unit_from_meter(reach_param.spheres_center_wrt_arm[0], self.fkr_xyzdelta)
             spheres_center_y = voxel_unit_from_meter(reach_param.spheres_center_wrt_arm[1], self.fkr_xyzdelta)
             spheres_center_z = voxel_unit_from_meter(reach_param.spheres_center_wrt_arm[2], self.fkr_xyzdelta)
@@ -590,7 +590,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
             ee_length_wrt_j5 = np.dot(eetrans_wrt_j5, eeorien)
             rot_center_wrt_arm = [0, 0, get_link_offset(self.robot, l0_name, l2_name)[2]]
         spheres_center_wrt_arm = self.fkr_sampling_dirs[0]*ee_length_wrt_j5 + rot_center_wrt_arm
-        # Calculate position relative to robot's link 1 because FKR was calculated with origin at link 1
+        # > calculate position relative to robot's link 1 because FKR was calculated with origin at link 1
         l1_wrt_arm = get_link_offset(self.robot, l0_name, l1_name)
         spheres_center_wrt_l1 = spheres_center_wrt_arm - l1_wrt_arm
 
@@ -602,7 +602,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         vx -= int(np.abs(min_x))
         vy -= int(np.abs(min_y))
         vz -= int(np.abs(min_z))
-        # Only consider valid voxels in region (x > Xmin, z > Zmin)
+        # > only consider valid voxels in region (x > Xmin, z > Zmin)
         xmin_voxel = int(voxel_unit_from_meter(Xmin_wrt_arm - l1_wrt_arm[0], self.fkr_xyzdelta))
         zmin_voxel = int(voxel_unit_from_meter(Zmin_wrt_arm - l1_wrt_arm[2], self.fkr_xyzdelta))
         if Zmax_wrt_arm is not None:
@@ -610,10 +610,9 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         else:
             zmax_voxel = max(vz)+1
 
+        # Get outer surface
         def common(lst1, lst2): 
             return list(set(lst1) & set(lst2))
-
-        # Get outer surface
         outer_xyzr = []
         for z_now in range(zmin_voxel, zmax_voxel+1, 1):
             z_indices = list(np.where(vz==z_now)[0])
@@ -638,7 +637,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                     z_out = meter_from_voxel_unit(vz[y_out_ind], self.fkr_xyzdelta)
                     r = np.linalg.norm(np.array([x_out, y_out, z_out])-np.array(spheres_center_wrt_l1))
                     outer_xyzr.append([x_out, y_out, z_out, r])        
-        # Calculate outer sphere' radius Rmax
+        # > calculate outer sphere' radius Rmax
         Rmax = min(np.array(outer_xyzr)[:,3]) - safe_margin
 
         # Get inner surface
@@ -672,16 +671,20 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                             z_in = meter_from_voxel_unit(vz[y_in_ind], self.fkr_xyzdelta)
                             r = np.linalg.norm(np.array([x_in, y_in, z_in])-np.array(spheres_center_wrt_l1))
                             inner_xyzr.append([x_in, y_in, z_in, r])
-        # Calculate inner sphere' radius Rmax
+        # > calculate inner sphere' radius Rmax
         if len(inner_xyzr) > 0:
             Rmin = max(np.array(inner_xyzr)[:,3]) + safe_margin
         else: 
             Rmin = 0
 
+        # TODO: Max azimuthal angle difference
+        max_phidiff = np.pi/3
+
+        # Results
         reach_param = ReachLimitParameters(Rmin, Rmax, Xmin_wrt_arm, Zmin_wrt_arm, Zmax_wrt_arm, \
-                                           spheres_center_wrt_arm, arm_ori_wrt_base)
-        print("--FKR solver finished successfully, results: \nreach_param: \n  [Rmin, Rmax] = [{}, {}] m, \
-              \n  spheres_center_wrt_arm = {} m, \n  arm_ori_wrt_base = {} m".format(reach_param.Rmin, \
-              reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
+                                           spheres_center_wrt_arm, arm_ori_wrt_base, max_phidiff)
+        print("--FKR solver finished successfully: reach_param:")
+        print("  * [Rmin, Rmax] = [{}, {}] m, \n  * spheres_center_wrt_arm = {} m, \n  * arm_ori_wrt_base = {} m"\
+            .format(reach_param.Rmin, reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
         return reach_param
 # END
