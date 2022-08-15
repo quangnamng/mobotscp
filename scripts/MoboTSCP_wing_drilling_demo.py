@@ -7,6 +7,7 @@ import IPython
 import logging
 import numpy as np
 import openravepy as orpy
+import robotsp as rtsp
 import raveutils as ru
 import signal
 import time
@@ -67,31 +68,20 @@ if __name__ == "__main__":
   success = ru.kinematics.load_link_stats(robot, xyzdelta=0.04)
   # > set velocity & acceleration limits
   velocity_limits = (robot.GetDOFVelocityLimits()*0.1).tolist()
-  acceleration_limits = [5., 4.25, 4.25, 5.25, 6., 8.]
+  acceleration_limits = [1., 1., 1., 1., 1., 1.]
   robot.SetDOFVelocityLimits(velocity_limits)
   robot.SetDOFAccelerationLimits(acceleration_limits)
   velocity_limits.extend([0.3, 0.3, 0.3])
-  acceleration_limits.extend([0.2, 0.2, 0.2])
+  acceleration_limits.extend([0.1, 0.1, 0.1])
 
 
   # Register the targets
   wing = env.GetKinBody('wing')
-  targets_ray = []   # list of targets in orpy.Ray type for OpenRAVE usage
-  targets_array = [] # list of targets in numpy.array type for computation usage
-  max_no_tar = 288   # number of targets to be registered
-  i_tar = 0
-  for link in wing.GetLinks():
-    lname = link.GetName()
-    if lname.startswith('hole') and i_tar<max_no_tar:
-      azimuth = np.deg2rad(46-(i_tar%24)*4)
-      #azimuth = 0.
-      transform = mtscp.utils.add_orien_to_targets(link.GetTransform(), azimuth)
-      targets_ray.append( ru.conversions.to_ray(transform) )
-      targets_array.append( mtscp.utils.to_array(transform) )
-      i_tar += 1
-  targets_array = np.vstack(targets_array)
-  targets_theta = np.arccos(targets_array[:,-1])
-  logger.info("No of targets: {}".format(len(targets_ray)))
+  max_targets = 288
+  azimuths = [np.deg2rad(46-(i%24)*4) for i in range(max_targets)]
+  targets = mtscp.utils.RegisterTargets(links=wing.GetLinks(), targets_name='hole', \
+                                        max_targets=max_targets, add_azimuth=azimuths)
+  logger.info("Number of targets: {}".format(len(targets.targets_ray)))
 
   # Define and discretize the floor
   floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 0.3], \
@@ -100,8 +90,8 @@ if __name__ == "__main__":
 
   # FKR parameters
   # > sample orientations
-  theta_min = min(targets_theta)
-  theta_max = max(targets_theta)
+  theta_min = min(targets.targets_theta)
+  theta_max = max(targets.targets_theta)
   theta_gap = theta_max - theta_min
   samples = 5
   phi = 0.
@@ -126,19 +116,37 @@ if __name__ == "__main__":
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
 
-  # MoboTSCP solver
-  # > SCP parameters
+  # SCP parameters
   scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', SCP_maxiters=20, cluster_maxiters=100)
-  # > TODO: TSP parameters
-  tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome)
 
+  # TSP parameters
+  tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome, stack_offset=1.0)
+  # > task space parameters
+  tsp_param.tsp_solver = rtsp.tsp.two_opt
+  tsp_param.tspace_metric = rtsp.metric.euclidean_fn
+  # > configuration space parameters
+  tsp_param.cspace_metric = rtsp.metric.max_joint_diff_fn
+  tsp_param.cspace_metric_args = (1./robot.GetActiveDOFMaxVel()[:6],)
+  # > kinematics parameters
+  tsp_param.iktype = orpy.IkParameterizationType.Transform6D
+  tsp_param.standoff = 0.002
+  tsp_param.step_size = np.pi/4.
+  tsp_param.affine_velocity_limits = velocity_limits
+  tsp_param.affine_acceleration_limits = acceleration_limits
+  # > planning parameters
+  tsp_param.try_swap = True
+  tsp_param.planner = 'BiRRT'
+  tsp_param.max_iters = 100
+  tsp_param.max_ppiters = 30
+
+  # MoboTSCP solver
   # > solve
-  solver = mtscp.solver.MoboTSCP(robot, targets_array, floor, reach_param, scp_param, tsp_param)
+  solver = mtscp.solver.MoboTSCP(robot, targets, floor, reach_param, scp_param, tsp_param)
   output = solver.solve()
   # > extract info
   logger.info("MoboTSP solver finished successfully:")
-  logger.info("* number of clusters: {}".format(output["clusters_no"]))
-  logger.info("* cluster_time: {} s".format(output["cluster_time"]))
+  logger.info("* number of clusters: clusters_no = {}".format(output["clusters_no"]))
+  logger.info("* time used: mobotscp_time = {} s".format(output["mobotscp_time"]))
 
 
   # Viewer
@@ -151,54 +159,31 @@ if __name__ == "__main__":
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])
 
-  # Visualize clusters of targets
-  arrows = []
-  points = []
-  axes = []
-  tour = []
-  colors = []
-  colors.append((0., 1., 1.))
-  colors.append((1., 0., 1.))
-  colors.append((1., 1., 0.))
-  colors.append((1., 0., 0.))
-  colors.append((0., 1., 0.))
-  colors.append((0., 0., 1.))
-  colors.append((1., 1., 1.))
-  colors.append((0.1, 0.1, 0.1))
-  clusters_no = output["clusters_no"]
-  base_poses = output["base_poses"]
+  # Visualize clusters and base tour
+  clusters = output["clusters"]
   base_tour = output["base_tour"]
-  for k in range(clusters_no):
-    i = base_tour[k]
-    # > draw arrows on targets
-    for j in range(len(output["clusters"][i])):
-      arrow_len = 0.05
-      tar_ray = targets_ray[output["clusters"][i][j]]
-      tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
-      arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., color=colors[i]) )
-    # > draw points at the base poses
-    base_xyz = np.array(list(base_poses[i][:2])+[0])
-    points.append( ru.visual.draw_point(env=env, point=base_xyz, size=20, color=colors[i]) )
-    # > draw axes at the base poses
-    base_trans = tr.euler_matrix(0, 0, base_poses[i][2], 'sxyz')
-    base_trans[:3,3] = base_xyz
-    axes.append( ru.visual.draw_axes(env=env, transform=base_trans, dist=0.2, linewidth=4) )
-    # > draw arrows representing base tour
-    if k < len(base_poses)-1:
-      base_xyz_next = np.array(list(base_poses[base_tour[k+1]][:2])+[0])
-      tour_len = np.linalg.norm(base_xyz_next-base_xyz)
-      tour_dir = (base_xyz_next-base_xyz)/tour_len
-      tour_ray = orpy.Ray(base_xyz, tour_dir)
-      tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, color=colors[i]) )
-  # > draw the reachability limits that bound each cluster
-  # drawer = mtscp.fkreach.DrawReachLimits(reach_param)
-  # drawer.draw_limits(env, base_poses[0])
+  base_poses = output["base_poses"]
+  visual_solution = mtscp.utils.VisualizeSolution(targets.targets_ray, clusters, base_tour)
+  visual_solution.visualize_clusters(env)
+  visual_solution.visualize_base_tour(env, base_poses, base_home, floor.floor_z)
 
 
-  # TODO: Execute the trajectories
+  # Execute the trajectories
+  robot.SetActiveDOFValues(output["cgraph"].node[output["config_tour"][0]]['value'])
+  raw_input("Press Enter to start simulation...")
   logger.info("Executing the trajectories...")
-
-
+  draw = []
+  draw_htour = np.array(output["target_tour"])[1:-1]-1
+  max_traj_idx = len(output["trajs"])-1
+  sim_starttime = time.time()
+  for i, traj in enumerate(output["trajs"]):
+    robot.GetController().SetPath(traj)
+    robot.WaitForController(0)
+    if(max_traj_idx-i):
+      tgt = output["targets_xyz"][draw_htour[i]+1]
+      draw.append(ru.visual.draw_point(env, tgt, 10, np.array([1,1,1])))
+  sim_time = time.time() - sim_starttime
+  logger.info("Executed all trajectories in {} s".format(sim_time))
 
 
   # Clear and exit

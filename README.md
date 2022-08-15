@@ -36,7 +36,7 @@ git clone https://github.com/crigroup/robotsp.git
 ```
 pip install SetCoverPy
 ```
-* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html) (optional): for visualization
+* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): for FKR visualization
 ```
 sudo apt install mayavi2
 ```
