@@ -59,9 +59,9 @@ The FKR data are saved in .h5py/.pp files which store all points reachable by th
 at some orientations as described below. The raw FKR data will then be analyzed to define a "reachable 
 region" (relative to the robot) with analytical geometry called "reachability limits." 
 
-File name: e.g. `fkr.mobile_manipulator_drill_114_148deg<auto_ID_number>.pp`
+File name: e.g. `fkr.mobile_manipulator_drill_110-150degdeg<auto_ID_number>.pp`
 * `mobile_manipulator_drill`: robot's name
-* `114_148deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
+* `110-150deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
 ranges from 114 to 148 deg while azimuthal angle is fixed at 0 deg by default.
 
 FKR data are stored in `data/reachability/robot.<robot_id>/` for each robot. To use FKR data, 
@@ -75,7 +75,14 @@ Some screenshots of the visualization of FKR data & limits can be found in `data
 
 
 ## Simulation demo
-TODO
+Run the simulation of mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
+performing a drilling task on a curved wing part:
+```
+rosrun mobotscp MoboTSCP_wing_drilling_demo.py
+```
+The direction to visit each target is represented by an arrow, and different clusters are be 
+visualized by different colors. The poses for the base to visit each cluster are also shown 
+with corresponding colors, and arrows are used to visulize the base tour.
 
 
 ## Troubleshoot

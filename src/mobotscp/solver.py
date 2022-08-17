@@ -103,8 +103,8 @@ class MoboTSCP(object):
   def get_config_per_target(self, clusters, base_tour, base_poses, Tbase):
     config_per_target = []
     config_per_target += [[self.tsp_param.qhome]]
-    targets_xyz = []
-    targets_xyz.append(self.tsp_param.phome)
+    visit_xyz = []
+    visit_xyz.append(self.tsp_param.phome)
     with self.env:
       for i in base_tour:
         # Spawn robot in a base pose
@@ -129,9 +129,9 @@ class MoboTSCP(object):
           with self.robot:
             self.robot.SetActiveDOFValues(qrobot)
             position = self.manip.GetEndEffectorTransform()[:3,3]
-            targets_xyz.append(position)
+            visit_xyz.append(position)
       self.robot.SetTransform(self.tsp_param.Thome)
-    return config_per_target, targets_xyz
+    return config_per_target, visit_xyz
 
 
   def stack_cluster(self, clusters, Tbase, base_tour):
@@ -216,7 +216,7 @@ class MoboTSCP(object):
     ttour_starttime = time.time()
     target_tour = rtsp.tsp.two_opt(tgraph)
     ttour_time = time.time() - ttour_starttime
-    print("ttour_time = {} s".format(ttour_time))
+    print("  * ttour_time = {} s".format(ttour_time))
     target_tour = rtsp.tsp.rotate_tour(target_tour,start=0)
     # create sorted configurations setslist
     setslist = []
@@ -232,14 +232,14 @@ class MoboTSCP(object):
     starttime = time.time()
     ctour = nx.dijkstra_path(cgraph, source=0, target=cgraph.number_of_nodes()-1)
     ctour_time = time.time() - starttime
-    print("ctour_time = {} s".format(ctour_time))
+    print("  * ctour_time = {} s".format(ctour_time))
     return ctour, ctour_time
 
 
   def get_trajectories(self, cgraph, ctour):
     trajectories, traj_time = rtsp.solver.compute_cspace_trajectories(self.robot, cgraph, ctour, self.tsp_param)
     traj_time = sum(traj_time)
-    print("traj_time = {} s".format(traj_time))
+    print("  * traj_time = {} s".format(traj_time))
     # for traj in trajectories:
     #   orpy.planningutils.SmoothAffineTrajectory(traj, maxvelocities=self.tsp_param.affine_velocity_limits, \
     #                                             maxaccelerations=self.tsp_param.affine_acceleration_limits)
@@ -247,7 +247,7 @@ class MoboTSCP(object):
 
 
   def prepare_output(self, targets_reachids, targets_unreachids, scp_time, clusters, base_poses, base_tour, \
-                     tsp_time, ctour_time, cgraph, config_tour, ttour_time, traj_time, target_tour, targets_xyz, trajs):
+                     tsp_time, target_tour, ttour_time, visit_xyz, cgraph, config_tour, ctour_time, trajs, traj_time):
     self.output["targets_reachids"] = targets_reachids
     self.output["targets_unreachids"] = targets_unreachids
     self.output["scp_time"] = scp_time
@@ -256,19 +256,19 @@ class MoboTSCP(object):
     self.output["base_poses"] = base_poses
     self.output["base_tour"] = base_tour
     self.output["tsp_time"] = tsp_time
-    self.output["ctour_time"] = ctour_time
+    self.output["ttour_time"] = ttour_time
+    self.output["target_tour"] = target_tour
+    self.output["visit_xyz"] = visit_xyz
     self.output["cgraph"] = cgraph
     self.output["config_tour"] = config_tour
-    self.output["ttour_time"] = ttour_time
-    self.output["traj_time"] = traj_time
-    self.output["target_tour"] = target_tour
-    self.output["targets_xyz"] = targets_xyz
+    self.output["ctour_time"] = ctour_time
     self.output["trajs"] = trajs
+    self.output["traj_time"] = traj_time
     self.output["mobotscp_time"] = scp_time + tsp_time
 
 
   def solve(self):
-    # SCP: cluster all reachable targets into clusters
+    # geoSCP: cluster all reachable targets into clusters
     starttime = time.time()
     # > connect targets to floor points
     tar2floor = geoscp.ConnectTargets2Floor(self.targets_array, self.floor, self.reach_param)
@@ -279,15 +279,15 @@ class MoboTSCP(object):
                           self.reach_param.arm_ori_wrt_base, self.reach_param.max_phidiff, \
                           self.scp_param.SCP_solver, self.scp_param.SCP_maxiters, self.scp_param.cluster_maxiters)
     scp_time = time.time() - starttime
-    print("scp_time = {} s".format(scp_time))
+    print("  * scp_time = {} s".format(scp_time))
 
-    # TSP: find optimal sequence to visit all targets
+    # stackTSP: find optimal sequence to visit all targets
     starttime = time.time()
-    print("--TSP: Solving sequencing using RoboTSP solver...")
+    print("--stackTSP: Solving sequencing...")
     # > find base tour
     base_tour = self.get_base_tour(Tbase)
     # > find IK solution for targets in each cluster
-    config_per_target, targets_xyz = self.get_config_per_target(clusters, base_tour, base_poses, Tbase)
+    config_per_target, visit_xyz = self.get_config_per_target(clusters, base_tour, base_poses, Tbase)
     # > find task-space tour
     cgraph, target_tour, ttour_time = self.get_target_tour(clusters, Tbase, base_tour, config_per_target)
     # > find configuration-space tour
@@ -295,11 +295,11 @@ class MoboTSCP(object):
     # > compute trajectories
     trajs, traj_time = self.get_trajectories(cgraph, config_tour)
     # > record time used
-    print("--TSP finished successfully.")
+    print("--stackTSP finished successfully.")
     tsp_time = time.time() - starttime
-    print("tsp_time = {} s".format(tsp_time))
+    print("  * tsp_time = {} s".format(tsp_time))
 
     # Results
     self.prepare_output(targets_reachids, targets_unreachids, scp_time, clusters, base_poses, base_tour, \
-                        tsp_time, ctour_time, cgraph, config_tour, ttour_time, traj_time, target_tour, targets_xyz, trajs)
+                        tsp_time, target_tour, ttour_time, visit_xyz, cgraph, config_tour, ctour_time, trajs, traj_time)
     return self.output

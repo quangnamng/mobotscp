@@ -6,6 +6,7 @@ import h5py
 import numpy as np
 import openravepy as orpy
 import os
+import raveutils as ru
 import tf.transformations as tr
 import time
 
@@ -166,14 +167,17 @@ def display_mayavi_viewpoint(view):
 
 class GenerateFKR(object):
     def __init__(self, sampling_mode="visible-front", xyz_delta=0.04, angle_inc=np.pi/6., angle_offset=0., \
-                 max_radius=None, orientation_list=[[1.,0.,0.]], l1_from_ground=0.5175):
+                 max_radius=None, lbase_name='chassis_link', l1_name='link1', j1_lim=[-np.pi/2, np.pi/2], \
+                 orientation_list=[[1.,0.,0.]]):
         self.sampling_mode = sampling_mode
         self.xyzdelta = xyz_delta
         self.angle_inc = angle_inc
         self.angle_offset = angle_offset
         self.max_radius = max_radius
         self.sampling_dirs = orientation_list
-        self.l1_from_ground = l1_from_ground
+        self.lbase_name = lbase_name
+        self.l1_name = l1_name
+        self.j1_lim = j1_lim
 
 
 class FKRParameters(object):
@@ -215,6 +219,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         except:
             raise ValueError("Active manipulator is not set")
         self.data_id = param.data_id
+        self.param = param
         # FKR
         self.fkr_version = "1.3.0"
         self.fkr_3d = None
@@ -223,6 +228,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         self.fkr_extent = None
         self._fkr_databasefile = None
         self.fkr_build_time = None
+        self.fkr_j1_min = None
+        self.fkr_j1_max = None
 
         super(FocusedKinematicReachability, self).__init__(robot=self.robot)
         self.load()
@@ -233,6 +240,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 print("Database id [{}] is already available. Overwritting is not currently supported.")
             else:
                 gen_ = param.gen_fkr_param
+                gen_.l1_from_ground = get_link_offset(self.robot, gen_.lbase_name, gen_.l1_name)[2]
                 print("Database id [{}] is not found. Generating with params:".format(self.data_id))
                 print("sampling_dirs: {}".format(gen_.sampling_dirs))
                 print("sampling mode: {}".format(gen_.sampling_mode))
@@ -240,18 +248,33 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 print("fkr_angle_inc: {}".format(gen_.angle_inc))
                 print("fkr_angle_offset: {}".format(gen_.angle_offset))
                 print("l1_from_ground: {}m".format(gen_.l1_from_ground))
+                print("j1_lim: {} rad".format(gen_.j1_lim))
                 if len(gen_.sampling_dirs)==0:
                     raise ValueError("Please set sampling_dirs")
+                joint_limits = self.robot.GetDOFLimits()
+                fkr_joint_limits = self.robot.GetDOFLimits()
+                print("Real robot's joint limits: {} rad".format(joint_limits))
+                if fkr_joint_limits[0][0] > param.gen_fkr_param.j1_lim[0] or \
+                    fkr_joint_limits[1][0] < param.gen_fkr_param.j1_lim[1]:
+                    raise ValueError("Argument 'j1_lim' cannot be wider than real robot's joint 1 limits: [{},{}]"
+                                     .format(fkr_joint_limits[0][0], fkr_joint_limits[1][0]))
+                fkr_joint_limits[0][0] = param.gen_fkr_param.j1_lim[0]
+                fkr_joint_limits[1][0] = param.gen_fkr_param.j1_lim[1]
+                self.robot.SetDOFLimits(fkr_joint_limits[0], fkr_joint_limits[1])
+                print("Joint limits used for FKR: {} rad".format(self.robot.GetDOFLimits()))
                 self.build_fkr(self.data_id, gen_.sampling_dirs, maxradius=gen_.max_radius, \
                                fkr_xyzdelta=gen_.xyzdelta, fkr_angle_inc=gen_.angle_inc, \
                                fkr_angle_offset=gen_.angle_offset, sampling_mode=gen_.sampling_mode, \
                                l1_from_ground=gen_.l1_from_ground)
+                self.robot.SetDOFLimits(joint_limits[0], joint_limits[1])
                 exit()
         else:
             assert self.has_file_name(self.data_id), "Database id [{}] is not found."
             if not self.loadFKR_HDF5(self.data_id):
                 raise ValueError("Failed to load FKR hdf5 with id {}".format(self.data_id))
             print("sampling_dirs: \n{}".format(self.fkr_sampling_dirs))
+            print("xyzdelta = {}".format(self.fkr_xyzdelta))
+            print("FKR j1_min, j1_max = [{}, {}] rad".format(self.fkr_j1_min, self.fkr_j1_max))
 
     def get_fkr_version(self):
         return self.fkr_version
@@ -401,6 +424,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         with h5py.File(filename, 'w') as f:
             f['version'] = self.get_fkr_version()
             f['3d'] = self.fkr_3d
+            f['j1_min'] = self.param.gen_fkr_param.j1_lim[0]
+            f['j1_max'] = self.param.gen_fkr_param.j1_lim[1]
             f['qdensity3d'] = self.fkr_qdensity3d
             f['rotdensity3d'] = self.fkr_rotdensity3d
             f['extent'] = self.fkr_extent
@@ -439,6 +464,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 return False
 
             self.fkr_3d = f['3d'].value
+            self.fkr_j1_min = f['j1_min'].value
+            self.fkr_j1_max = f['j1_max'].value
             self.fkr_qdensity3d = f['qdensity3d'].value
             self.fkr_rotdensity3d = f['rotdensity3d'].value
             self.fkr_extent = f['extent'].value
@@ -573,7 +600,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         mlab.show()
 
     def calculate_reach_limits(self, Xmin_wrt_arm=0.25, Zmin_wrt_arm=0.3, Zmax_wrt_arm=None, \
-                               arm_ori_wrt_base=[0.2115, 0., 0.320], safe_margin=0.05, \
+                               safe_margin=0.05, lbase_name='chassis_link', \
                                l0_name='link0', l1_name='link1', l2_name='link2'):
         # Calculate position of spheres' center
         if not self.ikmodel.load():
@@ -593,6 +620,8 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
         # > calculate position relative to robot's link 1 because FKR was calculated with origin at link 1
         l1_wrt_arm = get_link_offset(self.robot, l0_name, l1_name)
         spheres_center_wrt_l1 = spheres_center_wrt_arm - l1_wrt_arm
+        # > relative position of the arm's origin wrt base
+        arm_ori_wrt_base = get_link_offset(self.robot, lbase_name, l0_name)
 
         # Get indices of valid fkr_3d
         vx, vy, vz = np.where(self.fkr_3d == 1.)
@@ -638,7 +667,7 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                     r = np.linalg.norm(np.array([x_out, y_out, z_out])-np.array(spheres_center_wrt_l1))
                     outer_xyzr.append([x_out, y_out, z_out, r])        
         # > calculate outer sphere' radius Rmax
-        Rmax = min(np.array(outer_xyzr)[:,3]) - safe_margin
+        Rmax = min(np.array(outer_xyzr)[:,3])
 
         # Get inner surface
         inner_xyzr = []
@@ -650,10 +679,11 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                 if len(y_indices) > 0:
                     vy_now = vy[y_indices]
                     # right space w.r.t. spheres' center
-                    y_right = [i for i in vy_now if i >= spheres_center_wrt_l1[1]]
+                    y_right = [i for i in vy_now if \
+                               i >= int(voxel_unit_from_meter(spheres_center_wrt_l1[1], self.fkr_xyzdelta))]
                     if len(y_right) > 0:
                         y_in = min(y_right)
-                        if y_in >= spheres_center_wrt_l1[1]+1:
+                        if y_in >= int(voxel_unit_from_meter(spheres_center_wrt_l1[1], self.fkr_xyzdelta))+1:
                             y_in_ind = y_indices[list(vy_now).index(y_in)]
                             y_in = meter_from_voxel_unit(y_in, self.fkr_xyzdelta)
                             x_in = meter_from_voxel_unit(vx[y_in_ind], self.fkr_xyzdelta)
@@ -661,10 +691,11 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                             r = np.linalg.norm(np.array([x_in, y_in, z_in])-np.array(spheres_center_wrt_l1))
                             inner_xyzr.append([x_in, y_in, z_in, r])
                     # right space w.r.t. spheres' center
-                    y_left = [i for i in vy_now if i < spheres_center_wrt_l1[1]]
+                    y_left = [i for i in vy_now if \
+                              i < int(voxel_unit_from_meter(spheres_center_wrt_l1[1], self.fkr_xyzdelta))]
                     if len(y_left) > 0:
                         y_in = max(y_left)
-                        if y_in < spheres_center_wrt_l1[1]-1:
+                        if y_in < int(voxel_unit_from_meter(spheres_center_wrt_l1[1], self.fkr_xyzdelta))-1:
                             y_in_ind = y_indices[list(vy_now).index(y_in)]
                             y_in = meter_from_voxel_unit(y_in, self.fkr_xyzdelta)
                             x_in = meter_from_voxel_unit(vx[y_in_ind], self.fkr_xyzdelta)
@@ -673,18 +704,31 @@ class FocusedKinematicReachability(orpy.databases.kinematicreachability.Reachabi
                             inner_xyzr.append([x_in, y_in, z_in, r])
         # > calculate inner sphere' radius Rmax
         if len(inner_xyzr) > 0:
-            Rmin = max(np.array(inner_xyzr)[:,3]) + safe_margin
+            Rmin = max(np.array(inner_xyzr)[:,3])
         else: 
             Rmin = 0
 
-        # TODO: Max azimuthal angle difference
-        max_phidiff = np.pi/3
+        # Check results and add safe margin to Rmin and Rmax
+        if (Rmax-Rmin) < 0.10:
+            raise ValueError("The limits 'Rmin' and 'Rmax' are too close, please adjust parameters and re-run.")
+        if safe_margin > 0.10 or safe_margin < 0 or safe_margin > (Rmax-Rmin-0.10)/2:
+            raise ValueError("safe_margin is prefered to be in range [0 - 0.05] m")
+        Rmin += safe_margin
+        Rmax -= safe_margin
+
+        # # Max azimuthal angle difference
+        if self.robot.GetDOFLimits()[0][0]>self.fkr_j1_min or self.robot.GetDOFLimits()[1][0]<self.fkr_j1_max:
+            raise ValueError("Robot's joint limits are too low.")
+        max_phidiff = 2 * min(self.fkr_j1_min-self.robot.GetDOFLimits()[0][0], \
+                              self.robot.GetDOFLimits()[1][0]-self.fkr_j1_max)
 
         # Results
         reach_param = ReachLimitParameters(Rmin, Rmax, Xmin_wrt_arm, Zmin_wrt_arm, Zmax_wrt_arm, \
                                            spheres_center_wrt_arm, arm_ori_wrt_base, max_phidiff)
         print("--FKR solver finished successfully: reach_param:")
-        print("  * [Rmin, Rmax] = [{}, {}] m, \n  * spheres_center_wrt_arm = {} m, \n  * arm_ori_wrt_base = {} m"\
-            .format(reach_param.Rmin, reach_param.Rmax, reach_param.spheres_center_wrt_arm, reach_param.arm_ori_wrt_base))
+        print("  * [Rmin, Rmax] = [{}, {}] m, ".format(reach_param.Rmin, reach_param.Rmax))
+        print("  * spheres_center_wrt_arm = {} m, ".format(reach_param.spheres_center_wrt_arm))
+        print("  * arm_ori_wrt_base = {} m".format(reach_param.arm_ori_wrt_base))
+        print("  * max_phidiff = {} rad".format(max_phidiff))
         return reach_param
 # END

@@ -266,7 +266,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
             tarids_per_chosenpt[j+i+1].pop(elementid)
             tarphi_per_chosenpt[j+i+1].pop(elementid)
         if tarphi_per_chosenpt[j+i+1]:
-          phidiff_per_chosenpt[j+i+1] = max(tarphi_per_chosenpt[j+i+1]) - min (tarphi_per_chosenpt[j+i+1])
+          phidiff_per_chosenpt[j+i+1] = max(tarphi_per_chosenpt[j+i+1]) - min(tarphi_per_chosenpt[j+i+1])
       i +=  1
       count = 0
     elif count >= (length-i):

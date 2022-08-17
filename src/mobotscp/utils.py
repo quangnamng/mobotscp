@@ -40,8 +40,6 @@ class RegisterTargets(object):
       List of target Rays for OpenRAVE usage
     * targets_array: 2D numpy.array
       Array of target arrays for computation usage
-    * targets_theta: 1D numpy.array
-      Array of target polar angles (theta) 
     """
     targets_ray = []
     targets_array = []
@@ -54,10 +52,8 @@ class RegisterTargets(object):
         targets_array.append( self.to_array(transform) )
         i += 1
     targets_array = np.vstack(targets_array)
-    targets_theta = np.arccos(targets_array[:,-1])
     self.targets_ray = targets_ray
     self.targets_array = targets_array
-    self.targets_theta = targets_theta
 
   def to_array(self, transform):
     """
@@ -116,15 +112,17 @@ class RectangularFloor(object):
 
 class VisualizeSolution(object):
   def __init__(self, targets_ray, clusters, base_tour):
-    self.colors = []
-    self.colors += [(0., 1., 1.)]
-    self.colors += [(1., 0., 1.)]
-    self.colors += [(1., 1., 0.)]
-    self.colors += [(1., 0., 0.)]
-    self.colors += [(0., 1., 0.)]
-    self.colors += [(0., 0., 1.)]
-    self.colors += [(1., 1., 1.)]
-    self.colors += [(0.1, 0.1, 0.1)]
+    self.colors = [] 
+    self.colors += [np.array([255,215,0])/255.]     # gold
+    self.colors += [np.array([0,139,139])/255.]     # dark cyan
+    self.colors += [np.array([147,112,219])/255.]   # medium purple
+    self.colors += [np.array([245,222,179])/255.]   # wheat
+    self.colors += [np.array([144,238,144])/255.]   # light green
+    self.colors += [np.array([219,112,147])/255.]   # pale violet red
+    self.colors += [np.array([139,69,19])/255.]     # saddle brown
+    self.colors += [np.array([255,140,0])/255.]     # dark orange
+    self.colors += [np.array([173,255,47])/255.]    # green yellow
+    self.colors += [np.array([255, 255, 255])/255.] # white
     self.arrows = []
     self.points = []
     self.axes = []
@@ -138,7 +136,7 @@ class VisualizeSolution(object):
       i = self.base_tour[k]
       # > draw arrows on targets
       for j in range(len(self.clusters[i])):
-        arrow_len = 0.05
+        arrow_len = 0.07
         tar_ray = self.targets_ray[self.clusters[i][j]]
         tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
         self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0, \

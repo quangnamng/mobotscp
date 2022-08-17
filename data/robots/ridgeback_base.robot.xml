@@ -15,6 +15,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/body.stl 1.0</render>
         <collision>meshes/ridgeback_base/body-collision.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
   </kinbody>
@@ -30,6 +31,7 @@
         <diffuseColor>0.8 0.8 0.0</diffuseColor>
         <render>meshes/ridgeback_base/side-cover.stl 1.0</render>
         <collision>meshes/ridgeback_base/side-cover.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="left_side_cover_link_joint" type="hinge" enable="false">
@@ -49,6 +51,7 @@
         <diffuseColor>0.8 0.8 0.0</diffuseColor>
         <render>meshes/ridgeback_base/side-cover.stl 1.0</render>
         <collision>meshes/ridgeback_base/side-cover.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="right_side_cover_link_joint" type="hinge" enable="false">
@@ -69,6 +72,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/end-cover.stl 1.0</render>
         <collision>meshes/ridgeback_base/end-cover.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="front_cover_link_joint" type="hinge" enable="false">
@@ -90,6 +94,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/end-cover.stl 1.0</render>
         <collision>meshes/ridgeback_base/end-cover.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="rear_cover_link_joint" type="hinge" enable="false">
@@ -110,6 +115,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/lights.stl 1.0</render>
         <collision>meshes/ridgeback_base/lights.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="front_lights_link_joint" type="hinge" enable="false">
@@ -131,6 +137,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/lights.stl 1.0</render>
         <collision>meshes/ridgeback_base/lights.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="rear_lights_link_joint" type="hinge" enable="false">
@@ -151,6 +158,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/top.stl 1.0</render>
         <collision>meshes/ridgeback_base/top.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
     </body>
     <joint name="top_link_joint" type="hinge" enable="false">
@@ -172,6 +180,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/axle.stl 1.0</render>
         <collision>meshes/ridgeback_base/axle.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>chassis_link</offsetfrom>
       <translation>0 0 0.05</translation>
@@ -201,6 +210,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/rocker.stl 1.0</render>
         <collision>meshes/ridgeback_base/rocker.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>axle_link</offsetfrom>
       <translation>0.319 0 0</translation>
@@ -226,6 +236,7 @@
         <radius>0.065</radius>
         <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
         <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>front_rocker_link</offsetfrom>
       <translation>0 0.2755 0</translation>
@@ -251,6 +262,7 @@
         <radius>0.065</radius>
         <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
         <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>front_rocker_link</offsetfrom>
       <translation>0 -0.2755 0</translation>
@@ -281,6 +293,7 @@
         <!--<transparency>0.5</transparency>-->
         <render>meshes/ridgeback_base/rocker.stl 1.0</render>
         <collision>meshes/ridgeback_base/rocker.stl 1.0</collision>
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>axle_link</offsetfrom>
       <translation>-0.319 0 0</translation>
@@ -306,6 +319,7 @@
         <radius>0.065</radius>
         <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
         <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>rear_rocker_link</offsetfrom>
       <translation>0 0.2755 0</translation>
@@ -331,6 +345,7 @@
         <radius>0.065</radius>
         <!--<render>meshes/ridgeback_base/wheel.stl 1.0</render>-->
         <!--<collision>meshes/ridgeback_base/wheel.stl 1.0</collision>-->
+        <translation>0 0 0.015</translation>
       </geom>
       <offsetfrom>rear_rocker_link</offsetfrom>
       <translation>0 -0.2755 0</translation>

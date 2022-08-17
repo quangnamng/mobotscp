@@ -66,6 +66,9 @@ if __name__ == "__main__":
     logger.error('Failed to load IKFast {0}'.format(iktype.name))
     raise IOError
   success = ru.kinematics.load_link_stats(robot, xyzdelta=0.04)
+  # > scale down joint limits for safety
+  joint_limits = [robot.GetDOFLimits()[0]*0.95, robot.GetDOFLimits()[1]*0.95]
+  robot.SetDOFLimits(joint_limits[0], joint_limits[1])
   # > set velocity & acceleration limits
   velocity_limits = (robot.GetDOFVelocityLimits()*0.1).tolist()
   acceleration_limits = [1., 1., 1., 1., 1., 1.]
@@ -82,42 +85,28 @@ if __name__ == "__main__":
   targets = mtscp.utils.RegisterTargets(links=wing.GetLinks(), targets_name='hole', \
                                         max_targets=max_targets, add_azimuth=azimuths)
   logger.info("Number of targets: {}".format(len(targets.targets_ray)))
+  targets_theta = np.arccos(targets.targets_array[:,-1])
+  theta_deg_min = np.rad2deg(min(targets_theta))
+  theta_deg_max = np.rad2deg(max(targets_theta))
+  logger.info("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
 
   # Define and discretize the floor
   floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 0.3], \
                                        floor_yrange=[-1., 1.], floor_z = 0.)
 
 
-  # FKR parameters
-  # > sample orientations
-  theta_min = min(targets.targets_theta)
-  theta_max = max(targets.targets_theta)
-  theta_gap = theta_max - theta_min
-  samples = 5
-  phi = 0.
-  fkr_orien_list = []
-  for i in range(samples):
-    theta_i = theta_min + i*theta_gap/(samples-1)
-    fkr_orien_list.append( [ np.sin(theta_i)*np.cos(phi), np.sin(theta_i)*np.sin(phi), np.cos(theta_i) ] )
-  # > set FKR generator's parameters 
-  gen_fkr_param = mtscp.fkreach.GenerateFKR(sampling_mode="visible-front", xyz_delta=0.05, angle_inc=np.pi/12, \
-                                            angle_offset=-np.pi/4, l1_from_ground=0.5175, max_radius=None, \
-                                            orientation_list=fkr_orien_list)
-  # > comment the line below to generate FKR data, or leave it uncommented if offline data is available
-  gen_fkr_param = None
-
   # Focused Kinematic Reachability (FKR)
   # > generate new (if gen_fkr_param is not None) or load available FKR data (if gen_fkr_param=None)
-  fkr_param = mtscp.fkreach.FKRParameters(data_id="mobile_manipulator_drill_wing_task", gen_fkr_param=gen_fkr_param)
+  fkr_param = mtscp.fkreach.FKRParameters(data_id="mobile_manipulator_drill_110-150deg", gen_fkr_param=None)
   fkr = mtscp.fkreach.FocusedKinematicReachability(env, robot, fkr_param)
   # > analyze FKR for reachability parameters
-  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.5, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
-                                           arm_ori_wrt_base=[0.2115, 0., 0.320], safe_margin=0.05, \
+  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.3, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
+                                           safe_margin=0., lbase_name='ridgeback_chassis_link', \
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
 
   # SCP parameters
-  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', SCP_maxiters=20, cluster_maxiters=100)
+  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', SCP_maxiters=30, cluster_maxiters=100)
 
   # TSP parameters
   tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome, stack_offset=1.0)
@@ -129,8 +118,8 @@ if __name__ == "__main__":
   tsp_param.cspace_metric_args = (1./robot.GetActiveDOFMaxVel()[:6],)
   # > kinematics parameters
   tsp_param.iktype = orpy.IkParameterizationType.Transform6D
-  tsp_param.standoff = 0.002
-  tsp_param.step_size = np.pi/4.
+  tsp_param.standoff = 0.02
+  tsp_param.step_size = np.pi/4
   tsp_param.affine_velocity_limits = velocity_limits
   tsp_param.affine_acceleration_limits = acceleration_limits
   # > planning parameters
@@ -146,15 +135,15 @@ if __name__ == "__main__":
   # > extract info
   logger.info("MoboTSP solver finished successfully:")
   logger.info("* number of clusters: clusters_no = {}".format(output["clusters_no"]))
-  logger.info("* time used: mobotscp_time = {} s".format(output["mobotscp_time"]))
+  logger.info("* total solver time: mobotscp_time = {} s".format(output["mobotscp_time"]))
 
 
   # Viewer
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-110, 0, 210]))
-  Tcamera[:3,3] = [-2, 3, 2]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-100, 0, -10]))
+  Tcamera[:3,3] = [-1.25, -3, 1.2]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])
@@ -180,8 +169,8 @@ if __name__ == "__main__":
     robot.GetController().SetPath(traj)
     robot.WaitForController(0)
     if(max_traj_idx-i):
-      tgt = output["targets_xyz"][draw_htour[i]+1]
-      draw.append(ru.visual.draw_point(env, tgt, 10, np.array([1,1,1])))
+      visit_xyz = output["visit_xyz"][draw_htour[i]+1]
+      draw.append(ru.visual.draw_point(env, visit_xyz, 7, np.array([51,51,51])/255.))
   sim_time = time.time() - sim_starttime
   logger.info("Executed all trajectories in {} s".format(sim_time))
 
