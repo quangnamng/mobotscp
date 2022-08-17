@@ -62,8 +62,8 @@ if __name__ == "__main__":
   fkr_param = fkreach.FKRParameters(data_id="mobile_manipulator_drill_110-150deg", gen_fkr_param=gen_fkr_param)
   fkr = fkreach.FocusedKinematicReachability(env, robot, fkr_param)
   # > analyze FKR for reachability parameters
-  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.3, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
-                                           safe_margin=0.0, lbase_name='ridgeback_chassis_link', \
+  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.40, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
+                                           safe_margin=0.00, lbase_name='ridgeback_chassis_link', \
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
   # > uncomment the line below to visualize FKR iso surface & reachability limits
   fkr.visualize(l0_name='denso_link0', l1_name='denso_link1', showlimits=True, reach_param=reach_param)

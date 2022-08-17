@@ -81,7 +81,10 @@ if __name__ == "__main__":
   # Register the targets
   wing = env.GetKinBody('wing')
   max_targets = 288
+  # > comment 1 of 2 lines below to add azimuthal angles to the targets or not
   azimuths = [np.deg2rad(46-(i%24)*4) for i in range(max_targets)]
+  # azimuths = [0]*max_targets
+  # > register targets with the azimuthal angles added
   targets = mtscp.utils.RegisterTargets(links=wing.GetLinks(), targets_name='hole', \
                                         max_targets=max_targets, add_azimuth=azimuths)
   logger.info("Number of targets: {}".format(len(targets.targets_ray)))
@@ -100,8 +103,8 @@ if __name__ == "__main__":
   fkr_param = mtscp.fkreach.FKRParameters(data_id="mobile_manipulator_drill_110-150deg", gen_fkr_param=None)
   fkr = mtscp.fkreach.FocusedKinematicReachability(env, robot, fkr_param)
   # > analyze FKR for reachability parameters
-  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.3, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
-                                           safe_margin=0., lbase_name='ridgeback_chassis_link', \
+  reach_param = fkr.calculate_reach_limits(Xmin_wrt_arm=0.40, Zmin_wrt_arm=0.08, Zmax_wrt_arm=0.88, \
+                                           safe_margin=0.00, lbase_name='ridgeback_chassis_link', \
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
 
@@ -120,13 +123,16 @@ if __name__ == "__main__":
   tsp_param.iktype = orpy.IkParameterizationType.Transform6D
   tsp_param.standoff = 0.02
   tsp_param.step_size = np.pi/4
-  tsp_param.affine_velocity_limits = velocity_limits
-  tsp_param.affine_acceleration_limits = acceleration_limits
+  tsp_param.velocity_limits = velocity_limits
+  tsp_param.acceleration_limits = acceleration_limits
   # > planning parameters
+  tsp_param.planner = 'BiRRT' #options: 'BiRRT' or 'BasicRRT'
   tsp_param.try_swap = True
-  tsp_param.planner = 'BiRRT'
   tsp_param.max_iters = 100
-  tsp_param.max_ppiters = 30
+  tsp_param.max_ppiters = 50
+  # > time-parameterize the trajectories to satisfy velocity & acceleration limits
+  tsp_param.retimer = 'trapezoidalretimer' #options: 'trapezoidalretimer', 'parabolicsmoother', None
+  tsp_param.timestep = 0.02
 
   # MoboTSCP solver
   # > solve
@@ -142,8 +148,8 @@ if __name__ == "__main__":
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-100, 0, -10]))
-  Tcamera[:3,3] = [-1.25, -3, 1.2]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-110, 0, 0]))
+  Tcamera[:3,3] = [-1., -3, 1.5]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])
@@ -152,25 +158,30 @@ if __name__ == "__main__":
   clusters = output["clusters"]
   base_tour = output["base_tour"]
   base_poses = output["base_poses"]
-  visual_solution = mtscp.utils.VisualizeSolution(targets.targets_ray, clusters, base_tour)
-  visual_solution.visualize_clusters(env)
+  visual_solution = mtscp.utils.VisualizeSolution(targets, clusters, base_tour)
+  visual_solution.visualize_clusters(env, draw_arrows=False)
   visual_solution.visualize_base_tour(env, base_poses, base_home, floor.floor_z)
 
 
   # Execute the trajectories
   robot.SetActiveDOFValues(output["cgraph"].node[output["config_tour"][0]]['value'])
-  raw_input("Press Enter to start simulation...")
+  raw_input("Press Enter to start simulation...\n")
   logger.info("Executing the trajectories...")
-  draw = []
-  draw_htour = np.array(output["target_tour"])[1:-1]-1
+  draws = []
+  draw_ttour = np.array(output["task_tour"])[1:-1]-1
   max_traj_idx = len(output["trajs"])-1
   sim_starttime = time.time()
   for i, traj in enumerate(output["trajs"]):
     robot.GetController().SetPath(traj)
     robot.WaitForController(0)
-    if(max_traj_idx-i):
-      visit_xyz = output["visit_xyz"][draw_htour[i]+1]
-      draw.append(ru.visual.draw_point(env, visit_xyz, 7, np.array([51,51,51])/255.))
+    if (max_traj_idx-i):
+      # visit_xyz = output["visit_xyz"][draw_ttour[i]+1]
+      # draw.append(ru.visual.draw_point(env, visit_xyz, 7, np.array([51, 51, 51])/255.))
+      arrow_len = 0.05
+      tar_ray = targets.targets_ray[ (output["target_taskids"])[draw_ttour[i]] ]
+      tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+      draws.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=1, \
+                                       color=np.array([255, 0, 0])/255.) )
   sim_time = time.time() - sim_starttime
   logger.info("Executed all trajectories in {} s".format(sim_time))
 
