@@ -134,7 +134,7 @@ class VisualizeSolution(object):
     self.clusters = clusters
     self.base_tour = base_tour
 
-  def visualize_clusters(self, env, draw_arrows=False):
+  def visualize_clusters(self, env, draw_arrows=False, arrow_len=0.07):
     for k in range(len(self.clusters)):
       i = self.base_tour[k]
       for j in range(len(self.clusters[i])):
@@ -143,11 +143,10 @@ class VisualizeSolution(object):
         self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
                                                  color=self.colors[i%len(self.colors)]) )
         # > draw arrows on targets
-        if draw_arrows:
-          arrow_len = 0.07
+        if draw_arrows and arrow_len>0:
           tar_ray = self.targets_ray[self.clusters[i][j]]
           tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
-          self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=1, \
+          self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
                                                  color=self.colors[i%len(self.colors)]) )
 
   def visualize_base_tour(self, env, base_poses, base_home, floor_z):
@@ -199,7 +198,6 @@ class RetimeOpenraveTrajectory(object):
   def __init__(self, robot, traj, timestep=None, Vmax=None, Amax=None):
     self.env = robot.GetEnv()
     self.robotname = robot.GetName()
-    self.spec = traj.GetConfigurationSpecification()
     self.DOF = robot.GetActiveDOF() # total DOFs = joint DOFs + affine DOFs
     self.joint_DOF = len(robot.GetActiveDOFIndices())
     self.affine_DOF = self.DOF - self.joint_DOF
@@ -210,6 +208,12 @@ class RetimeOpenraveTrajectory(object):
 
   def check_inputs(self):
     valid = True
+    # check input trajectory
+    if self.input_traj is not None:
+      self.spec = self.input_traj.GetConfigurationSpecification()
+    else:
+      print("[RetimeOpenraveTrajectory] [ERROR] Invalid inputs: traj is None.")
+      valid = False
     # check constraints
     if (self.Vmax is None) or (self.Amax is None) or (self.timestep is None):
       print("[RetimeOpenraveTrajectory] [ERROR] Invalid inputs: Arguments timestep, Vmax, Amax must be specified.")
@@ -390,7 +394,6 @@ class RetimeOpenraveTrajectory(object):
         output_traj.Insert(i, waypoint, True)
     else:
       output_traj = self.input_traj
-      print("[RetimeOpenraveTrajectory] [ERROR] Retimer FAILED, returned initial trajectory.")
     return output_traj, success
 
 # END

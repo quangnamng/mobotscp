@@ -201,7 +201,7 @@ def solver_greedy(n, m, E, maxiters=20):
 
 
 def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
-                 max_phidiff=np.pi/6, solver='SCPy', SCP_maxiters=20, cluster_maxiters=200):
+                 max_phidiff=np.pi/6, solver='SCPy', point_maxiters=20, orient_maxiters=200):
   ### Cluster points: solve SCP to find the least number of points on floor to cover all targets
   floor_validids = np.unique(np.concatenate(floor_validids_per_tar)).astype(int).tolist()
   n, m, E, S = get_math_model(floor_validids_per_tar, floor_validids, targets_reachids)
@@ -209,11 +209,11 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   print("  * Size of universe: n = {}".format(n))
   print("  * Total number of sets in collection: m = {}".format(m))
   if solver=='SCPy':
-    sol, cost = solver_SCPy(n, m, E, SCP_maxiters)
+    sol, cost = solver_SCPy(n, m, E, point_maxiters)
   elif solver=='greedy':
-    sol, cost = solver_greedy(n, m, E, SCP_maxiters)
+    sol, cost = solver_greedy(n, m, E, point_maxiters)
   elif solver=='LPr':
-    sol, cost = solver_LPr(n, m, E, SCP_maxiters)
+    sol, cost = solver_LPr(n, m, E, point_maxiters)
   else:
     raise ValueError("The specified SCP solver is not supported. Valid values: solver='SCPy','greedy','LPr'")
   floor_chosenids = np.array(floor_validids)[np.flatnonzero(sol)]
@@ -248,7 +248,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   i = 0
   count = 0
   length = len(phidiff_per_chosenpt)
-  while i < length and i_check < cluster_maxiters:
+  while i < length and i_check < orient_maxiters:
     i_check += 1
     if phidiff_per_chosenpt[i] <= max_phidiff and tarids_per_chosenpt[i] and count < (length-i):
       # add current set into clusters
@@ -303,9 +303,9 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       floor_chosenpoints[i], floor_chosenpoints[-1] = floor_chosenpoints[-1], floor_chosenpoints[i]
       count += 1
   # > check maxiters
-  if i_check >= cluster_maxiters:
+  if i_check >= orient_maxiters:
     raise ValueError(("geoSCP failed: max iterations ({}) reached during assigning targets into clusters. " \
-                      "Please increase 'maxiters' value.").format(cluster_maxiters))
+                      "Please increase 'maxiters' value.").format(orient_maxiters))
 
   ### Results
   # > check results

@@ -1,5 +1,5 @@
-# mobotscp
-ROS package for MoboTSCP - Solution to the Mobile robot's Task Sequencing and Clustering Problem
+# MoboTSCP: Mobile Robot's Task Sequencing and Clustering Problem
+MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clustering Problem
 
 
 ## Getting started
@@ -80,9 +80,9 @@ performing a drilling task on a curved wing part:
 ```
 rosrun mobotscp MoboTSCP_wing_drilling_demo.py
 ```
-The direction to visit each target is represented by an arrow, and different clusters are be 
-visualized by different colors. The poses for the base to visit each cluster are also shown 
-with corresponding colors, and arrows are used to visulize the base tour.
+Different clusters are be visualized by different colors, and the directions to visit the targets 
+are represented by small arrows. The poses for the base to visit each cluster are also shown 
+with corresponding colors, and big arrows are used to visulize the base tour.
 
 
 ## Troubleshoot
