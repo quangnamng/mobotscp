@@ -17,8 +17,8 @@ if __name__ == "__main__":
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-110, 0, 210]))
-  Tcamera[:3,3] = [-2, 3, 2]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-147, 0, 180]))
+  Tcamera[:3,3] = [-0.25, 1.8, 3.2]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])

@@ -97,7 +97,7 @@ if __name__ == "__main__":
   logger.info("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
 
   # Define and discretize the floor
-  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 0.4], \
+  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., -0.4], \
                                        floor_yrange=[-1., 1.], floor_z = 0.)
 
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
   # SCP parameters: available options are 'SCPy', 'LPr', 'greedy'
-  scp_param = mtscp.solver.SCPparameters(SCP_solver='greedy', point_maxiters=30, orient_maxiters=100)
+  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', point_maxiters=30, orient_maxiters=100)
 
   # TSP parameters
   tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome)
@@ -125,17 +125,17 @@ if __name__ == "__main__":
   tsp_param.cspace_metric_args = (1./robot.GetActiveDOFMaxVel()[:6],)
   # > kinematics parameters
   tsp_param.iktype = orpy.IkParameterizationType.Transform6D
-  tsp_param.standoff = 0.03
+  tsp_param.standoff = 0.04
   tsp_param.step_size = np.pi/8
   tsp_param.velocity_limits = velocity_limits
   tsp_param.acceleration_limits = acceleration_limits
   # > planning parameters
-  tsp_param.planner = 'BiRRT' #options: 'BiRRT', 'BasicRRT'
+  tsp_param.planner = 'BiRRT'   #options: 'BiRRT', 'BasicRRT'
   tsp_param.try_swap = True
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'trapezoidalretimer' #options: 'trapezoidalretimer', 'parabolicsmoother'
+  tsp_param.retimer = 'trapezoidalretimer'  #options: 'parabolicsmoother', 'trapezoidalretimer', None
   tsp_param.timestep = 0.02
 
   # Solve
@@ -148,8 +148,8 @@ if __name__ == "__main__":
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-110, 0, 0]))
-  Tcamera[:3,3] = [-1., -3, 1.5]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-147, 0, 180]))
+  Tcamera[:3,3] = [-0.25, 1.8, 3.2]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])

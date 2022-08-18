@@ -10,7 +10,7 @@ MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clu
 sudo apt-get install ros-$ROS_DISTRO-gazebo-ros-pkgs ros-$ROS_DISTRO-gazebo-ros-control
 sudo apt-get install ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers
 ```
-* OpenRAVE 0.9.0 (mobotscp may not work with other versions of OpenRAVE)
+* OpenRAVE 0.9.0 (MoboTSCP may not work with other versions)
 ```
 # clone the repository
 cd && git clone https://github.com/crigroup/openrave-installation.git
@@ -27,51 +27,50 @@ git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 ./install-openrave.sh -j4
 cd && sudo rm -rf openrave-installation
 ```
-* Clone [RoboTSP](https://github.com/crigroup/robotsp.git): a Robotic TSP solver
-```
-cd ~/<catkin_workspace>/src
-git clone https://github.com/crigroup/robotsp.git
-```
+
+Some dependencies must be installed manually:
 * Install [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): a python SCP solver
 ```
 pip install SetCoverPy
 ```
-* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): for FKR visualization
+* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): data visualization
 ```
 sudo apt install mayavi2
 ```
+Other dependencies are specified in `.rosinstall` file and will be installed using wstool 
+during the installation step below.
 
 ### Installation
-After installing all prerequisites, clone [mobotscp](https://github.com/nqnam1/mobotscp.git) 
-and install it using the provided script: 
+After installing all prerequisites above, clone and install MoboTSCP using the provided script: 
 ```
 cd ~/<catkin_workspace>/src
 git clone https://github.com/nqnam1/mobotscp.git
 cd mobotscp
-./install.sh -w <catkin_workspace>
+./install.sh
 source ~/.bashrc
 ```
-Please ignore `-w <catkin_workspace>` if your workspace's name is `catkin_ws`.
+If your ROS workspace's name is not `catkin_ws`, try `./install.sh -w <your_workspace_name>`.
 
 
 ## Focused Kinematic Reachability (FKR)
-The FKR data are saved in .h5py/.pp files which store all points reachable by the robot's end-effector 
-at some orientations as described below. The raw FKR data will then be analyzed to define a "reachable 
-region" (relative to the robot) with analytical geometry called "reachability limits." 
+The FKR data are saved in .pp files which store all points reachable by the robot's end-effector 
+at some orientations as described below. The raw FKR data will then be analyzed to define a "
+reachable region" relative to the robot with analytical geometry called "reachability limits." 
 
-File name: e.g. `fkr.mobile_manipulator_drill_110-150degdeg<auto_ID_number>.pp`
+File name: e.g. `fkr.mobile_manipulator_drill_110-150deg<auto_ID_number>.pp`
 * `mobile_manipulator_drill`: robot's name
 * `110-150deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
-ranges from 114 to 148 deg while azimuthal angle is fixed at 0 deg by default.
+ranges from 110 to 150 degrees, whereas azimuthal angle is fixed at 0 deg by default.
 
-FKR data are stored in `data/reachability/robot.<robot_id>/` for each robot. To use FKR data, 
-copy all `robot.*` and `kinematics.*` folders from `data/reachability/` into `~/.openrave/`. 
-Newly generated data will also be located in `~/.openrave/`. The script `scripts/analyze_fkr.py` 
-demonstrates how to generate FKR, analyze FKR data for reachability limits, and visualization.
+FKR data are stored in `data/reachability/robot.<robot_id>/` for each robot. If you installed 
+MoboTSCP using provided script, `robot.*` and `kinematics.*` folders from `data/reachability/` 
+have already been copied into `~/.openrave/`. Newly generated data will also be located in 
+`~/.openrave/`. The script `scripts/generate_fkr.py` demonstrates how to generate FKR, analyze 
+FKR data for reachability limits, and visualization:
 ```
-rosrun mobotscp solve_fkr.py
+rosrun mobotscp generate_fkr.py
 ```
-Some screenshots of the visualization of FKR data & limits can be found in `data/figs/fkr`.
+Some screenshots of the visualization of FKR data & limits can be found in `data/figs`.
 
 
 ## Simulation demo
@@ -80,18 +79,18 @@ performing a drilling task on a curved wing part:
 ```
 rosrun mobotscp MoboTSCP_wing_drilling_demo.py
 ```
-Different clusters are be visualized by different colors, and the directions to visit the targets 
+Different clusters are visualized by different colors, and the directions to visit the targets 
 are represented by small arrows. The poses for the base to visit each cluster are also shown 
-with corresponding colors, and big arrows are used to visulize the base tour.
+with corresponding colors, and big arrows illustrate the base tour.
 
 
 ## Troubleshoot
-* `c++: internal compiler error: Killed (program cc1plus)` when building the package: due to CPU 
-and/or RAM overload during the `make` process. If building the package manually, try 
-`catkin build -j <no_of_CPUs>` or `catkin make install -j <no_of_CPUs>`. If using the provided 
-scripts, try running `./install.sh -n <no_of_CPUs>` with a smaller number of CPU processors. 
+* `c++: internal compiler error: Killed (program cc1plus)` when building the package: due to 
+CPU or RAM overload during the `make` process, especially if you use virtual machines or WSL. 
+If using the provided scripts, try `./install.sh -n <num_CPUs>` with a small number of CPUs. 
+If building manually, try `catkin build -j <num_CPUs>` or `catkin make install -j <num_CPUs>`. 
 
-* `No module named <module_name>`: if there are libraries missing when running script files, 
+* `No module named <module_name>`: there are modules/libraries missing when running script files, 
 firstly check whether all dependencies have been installed:
 ```
 cd ~/<catkin_workspace>/src
@@ -99,14 +98,14 @@ rosdep update --include-eol-distros && \
 sudo rosdep install --rosdistro $ROS_DISTRO --ignore-src --from-paths . -y
 ```
 
-* `No module named <module_name>`: if all dependences have been installed but some python2 modules/
-libraries are still missing, you can install them manually by `pip install <module_name>==<version>`. 
-Sometimes the latest version cannot be installed, so you may need to search for the version that supports 
-python 2.7.12 (in Ubuntu 16.04) or 2.7.17 (in Ubuntu 18.04). You may want to try `pip install --no-deps` 
-when `pip install` fails especially in Ubuntu 16.04 since its `pip`'s version is no longer supported.
+* `No module named <module_name>`: if all dependences have been installed but some python 
+modules/libraries are still missing, install them manually by `pip install <module_name>`. 
+If the latest version cannot be installed, search for the version that supports Python 2.7.12 
+(in Ubuntu 16.04) or 2.7.17 (in Ubuntu 18.04). You may try `pip install --no-deps` when 
+`pip install` fails especially in Ubuntu 16.04 since its `pip`'s version is no longer supported.
 
-* Unable to load `VTK viewer for mayavi2`: you may not be able to view the FKR visualization 
-but it will not affect the codes that generate and/or analyze FKR data.
+* `Imported VTK version (8.1) does not match the one`: unable to load VTK viewer for mayavi2, 
+you may not view the FKR visualization but it will not affect the codes that generate/analyze FKR.
 
 * `IOError: Unable to create file` when saving/loading .h5py/.pp files: please make sure you 
 have permission to create/modify files into the desired directory (`~/.openrave` for example) 

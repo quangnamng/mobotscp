@@ -140,7 +140,7 @@ class VisualizeSolution(object):
       for j in range(len(self.clusters[i])):
         # > draw points
         targets_xyz = self.targets_array[self.clusters[i][j]][:3]
-        self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
+        self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=3, \
                                                  color=self.colors[i%len(self.colors)]) )
         # > draw arrows on targets
         if draw_arrows and arrow_len>0:
