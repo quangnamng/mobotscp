@@ -83,7 +83,7 @@ if __name__ == "__main__":
   ### Task Definition
   # Register the targets
   wing = env.GetKinBody('wing')
-  max_num_targets = 288   # the wing has 288 targets on front side and 48 targets on back side
+  max_num_targets = 336   # the wing has 288 targets on front side and 48 targets on back side
   # > use the 2nd line below to add azimuthal angles to the targets, otherwise comment it
   azimuths = [0]*max_num_targets
   azimuths = [np.deg2rad(46-(i%24)*4) for i in range(max_num_targets)]
@@ -97,7 +97,7 @@ if __name__ == "__main__":
   logger.info("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
 
   # Define and discretize the floor
-  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., -0.4], \
+  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 1], \
                                        floor_yrange=[-1., 1.], floor_z = 0.)
 
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'trapezoidalretimer'  #options: 'parabolicsmoother', 'trapezoidalretimer', None
+  tsp_param.retimer = 'parabolicsmoother'   #options: 'parabolicsmoother', 'trapezoidalretimer', None
   tsp_param.timestep = 0.02
 
   # Solve
@@ -148,8 +148,8 @@ if __name__ == "__main__":
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-147, 0, 180]))
-  Tcamera[:3,3] = [-0.25, 1.8, 3.2]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-145, 0, 160]))
+  Tcamera[:3,3] = [0.5, 2.5, 4]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([.8, .85, .9])

@@ -227,6 +227,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   tarids_per_chosenpt = []
   tarphi_per_chosenpt = []
   phidiff_per_chosenpt = []
+  phicen_per_chosenpt = []
   targets_reacharray = targets_array[targets_reachids]
   for i in range(len(floor_chosenids)):
     tarids_per_chosenpt_i = S[np.flatnonzero(sol)[i]]
@@ -236,10 +237,22 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       targets_reacharray[tarids_per_chosenpt_i,-3] / np.sqrt(targets_reacharray[tarids_per_chosenpt_i,-3]**2 + \
         targets_reacharray[tarids_per_chosenpt_i,-2]**2) \
       ).tolist()
-    phidiff_per_chosenpt_i = max(tarphi_per_chosenpt_i) - min (tarphi_per_chosenpt_i)
     tarids_per_chosenpt += [tarids_per_chosenpt_i]
     tarphi_per_chosenpt += [tarphi_per_chosenpt_i]
+    # calculate max phi difference for each set
+    phidiff_per_chosenpt_i = max(tarphi_per_chosenpt_i) - min (tarphi_per_chosenpt_i)
+    phicen_per_chosenpt_i = min(tarphi_per_chosenpt_i) + 0.5*phidiff_per_chosenpt_i
+    if phidiff_per_chosenpt_i > np.pi:
+      new_max = max([x for x in tarphi_per_chosenpt_i if x<0]) + np.pi
+      new_min = min([x for x in tarphi_per_chosenpt_i if x>=0]) - np.pi
+      if phidiff_per_chosenpt_i > new_max-new_min:
+        phidiff_per_chosenpt_i = new_max-new_min
+        if new_max < abs(new_min):
+          phicen_per_chosenpt_i = (new_min+np.pi) + 0.5*phidiff_per_chosenpt_i
+        else:
+          phicen_per_chosenpt_i = (new_max-np.pi) - 0.5*phidiff_per_chosenpt_i
     phidiff_per_chosenpt += [phidiff_per_chosenpt_i]
+    phicen_per_chosenpt += [phicen_per_chosenpt_i]
   # > assign targets into clusters
   clusters = []
   arm_oris = []
@@ -254,7 +267,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       # add current set into clusters
       cluster_i = tarids_per_chosenpt[i]
       clusters.append(cluster_i)
-      phi_cen = np.round( min(tarphi_per_chosenpt[i]) + 0.5*phidiff_per_chosenpt[i], 3)
+      phi_cen = min(tarphi_per_chosenpt[i]) + 0.5*phidiff_per_chosenpt[i]
       base_point_i = np.array(floor_chosenpoints[i]) - utils.z_rotation(arm_ori_wrt_base, phi_cen)[:2]
       arm_oris.append(floor_chosenpoints[i])
       base_poses.append( np.append(base_point_i, phi_cen) )
@@ -267,6 +280,16 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
             tarphi_per_chosenpt[j+i+1].pop(elementid)
         if tarphi_per_chosenpt[j+i+1]:
           phidiff_per_chosenpt[j+i+1] = max(tarphi_per_chosenpt[j+i+1]) - min(tarphi_per_chosenpt[j+i+1])
+          phicen_per_chosenpt[j+i+1] = min(tarphi_per_chosenpt[j+i+1]) + 0.5*phidiff_per_chosenpt[j+i+1]
+          if phidiff_per_chosenpt[j+i+1] > np.pi:
+            new_max = max([x for x in tarphi_per_chosenpt[j+i+1] if x<0]) + np.pi
+            new_min = min([x for x in tarphi_per_chosenpt[j+i+1] if x>=0]) - np.pi
+            if phidiff_per_chosenpt[j+i+1] > new_max-new_min:
+              phidiff_per_chosenpt[j+i+1] = new_max-new_min
+              if new_max < abs(new_min):
+                phicen_per_chosenpt[j+i+1] = (new_min+np.pi) + 0.5*phidiff_per_chosenpt[j+i+1]
+              else:
+                phicen_per_chosenpt[j+i+1] = (new_max-np.pi) - 0.5*phidiff_per_chosenpt[j+i+1]
       i +=  1
       count = 0
     elif count >= (length-i):
@@ -280,12 +303,27 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
         new_ids = []
         for k in range(len(tarphi_per_chosenpt[i])):
           if minphi+j*stepphi < tarphi_per_chosenpt[i][k] <= minphi+(j+1)*stepphi:
-            new_phi += [tarphi_per_chosenpt[i][k]]
-            new_ids += [tarids_per_chosenpt[i][k]]
-        tarids_per_chosenpt += [new_ids]
-        tarphi_per_chosenpt += [new_phi]
-        phidiff_per_chosenpt += [max(new_phi) - min(new_phi)]
-        floor_chosenpoints += [floor_chosenpoints[i]]
+            new_phi.append(tarphi_per_chosenpt[i][k])
+            new_ids.append(tarids_per_chosenpt[i][k])
+        if len(new_phi)==0:
+          div -= 1
+        else:
+          tarids_per_chosenpt += [new_ids]
+          tarphi_per_chosenpt += [new_phi]
+          phidiff_per_chosenpt_i = max(new_phi) - min(new_phi)
+          phicen_per_chosenpt_i = min(new_phi) + 0.5*phidiff_per_chosenpt_i
+          if max(new_phi) - min(new_phi) > np.pi:
+            new_max = max([x for x in new_phi if x<0]) + np.pi
+            new_min = min([x for x in new_phi if x>=0]) - np.pi
+            if phidiff_per_chosenpt_i > new_max-new_min:
+              phidiff_per_chosenpt_i = new_max-new_min
+              if new_max < abs(new_min):
+                phicen_per_chosenpt_i += (new_min+np.pi) + 0.5*phidiff_per_chosenpt_i
+              else:
+                phicen_per_chosenpt_i += (new_max-np.pi) - 0.5*phidiff_per_chosenpt_i
+          phidiff_per_chosenpt += [phidiff_per_chosenpt_i]
+          phicen_per_chosenpt += [phicen_per_chosenpt_i]
+          floor_chosenpoints += [floor_chosenpoints[i]]
       print("The cluster associated with point {} has max azimuthal angle difference of {} deg (> {} deg). " \
             .format(np.array(floor_chosenpoints[i]), np.rad2deg(phidiff_per_chosenpt[i]), np.rad2deg(max_phidiff)), \
             "Split it into {} clusters.".format(div) )
@@ -300,6 +338,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       tarids_per_chosenpt[i], tarids_per_chosenpt[-1] = tarids_per_chosenpt[-1], tarids_per_chosenpt[i]
       tarphi_per_chosenpt[i], tarphi_per_chosenpt[-1] = tarphi_per_chosenpt[-1], tarphi_per_chosenpt[i]
       phidiff_per_chosenpt[i], phidiff_per_chosenpt[-1] = phidiff_per_chosenpt[-1], phidiff_per_chosenpt[i]
+      phicen_per_chosenpt[i], phicen_per_chosenpt[-1] = phicen_per_chosenpt[-1], phicen_per_chosenpt[i]
       floor_chosenpoints[i], floor_chosenpoints[-1] = floor_chosenpoints[-1], floor_chosenpoints[i]
       count += 1
   # > check maxiters

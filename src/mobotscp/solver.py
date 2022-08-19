@@ -265,7 +265,7 @@ class MoboTSCP(object):
                                                            maxaccelerations=self.tsp_param.acceleration_limits, \
                                                            plannername='parabolicsmoother')
         if status != orpy.PlannerStatus.HasSolution:
-          raise Exception("  * parabolicsmoother failed for trajectory {}.".format(i))
+          print("[WARN] parabolicsmoother failed to retime trajectory {}.".format(i))
         i += 1
     # > 'trapezoidalretimer'
     if retimer == 'trapezoidalretimer':
@@ -276,7 +276,8 @@ class MoboTSCP(object):
                                                             Amax=self.tsp_param.acceleration_limits)
         retimed_traj, success = trapezoidalretimer.retime()
         if not success:
-          raise Exception("  * trapezoidalretimer failed for trajectory {}.".format(len(retimed_trajs)))
+          print("[WARN] trapezoidalretimer failed to retime trajectory {}.".format(len(retimed_trajs)))
+          retimed_traj = traj
         retimed_trajs.append(retimed_traj)
       trajectories = retimed_trajs
     # Results
@@ -285,9 +286,18 @@ class MoboTSCP(object):
     return trajectories, traj_time
 
 
+  def compute_execution_time(self, trajectories):
+    execution_time = 0
+    for traj in trajectories:
+      if traj is None:
+        return float('inf')
+      execution_time += traj.GetDuration()
+    return execution_time
+
+
   def prepare_output(self, targets_reachids, targets_unreachids, clusters, base_poses, scp_time, \
-                      base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
-                      task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time):
+                     base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
+                     task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time):
     self.output["targets_reachids"] = targets_reachids
     self.output["targets_unreachids"] = targets_unreachids
     self.output["clusters"] = clusters
@@ -307,7 +317,8 @@ class MoboTSCP(object):
     self.output["trajs"] = trajs
     self.output["traj_time"] = traj_time
     self.output["tsp_time"] = tsp_time
-    self.output["mobotscp_time"] = scp_time + tsp_time
+    self.output["solver_time"] = scp_time + tsp_time
+    self.output["exe_time"] = self.compute_execution_time(trajs)
 
 
   def solve(self):
@@ -347,5 +358,8 @@ class MoboTSCP(object):
                         base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
                         task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time)
     print("--MoboTSCP solver finished successfully.")
-    print("  * mobotscp_time = {} s".format(self.output["mobotscp_time"]))
+    print("  * solver_time = {} s".format(self.output["solver_time"]))
+    print("  * exe_time = {} s".format(self.output["exe_time"]))
     return self.output
+
+# END
