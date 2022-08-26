@@ -1,5 +1,5 @@
 # MoboTSCP: Mobile Robot's Task Sequencing and Clustering Problem
-MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clustering Problem
+MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clustering Problem.
 
 
 ## Getting started
@@ -16,8 +16,7 @@ sudo apt-get install ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers
 cd && git clone https://github.com/crigroup/openrave-installation.git
 cd openrave-installation
 
-# In Ubuntu 18.04, use the next line to check out an old commit that installs OpenRAVE 0.9.0
-# Because latest commit will install OpenRAVE 0.9.0 for Ubuntu 16.04 but 0.53.1 for Ubuntu 18.04
+# In Ubuntu 18.04, use the next line to check out an old commit for OpenRAVE 0.9.0
 git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 
 # install using scripts
@@ -29,11 +28,11 @@ cd && sudo rm -rf openrave-installation
 ```
 
 Some dependencies must be installed manually:
-* Install [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): a python SCP solver
+* [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): a python SCP solver
 ```
 pip install SetCoverPy
 ```
-* Install [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): data visualization
+* [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): for data visualization
 ```
 sudo apt install mayavi2
 ```
@@ -43,13 +42,35 @@ during the installation step below.
 ### Installation
 After installing all prerequisites above, clone and install MoboTSCP using the provided script: 
 ```
-cd ~/<catkin_workspace>/src
+cd ~/<your_catkin_ws>/src
 git clone https://github.com/nqnam1/mobotscp.git
 cd mobotscp
 ./install.sh
-source ~/.bashrc
+cd && source .bashrc
 ```
-If your ROS workspace's name is not `catkin_ws`, try `./install.sh -w <your_workspace_name>`.
+Note: if your ROS workspace directory is not named `catkin_ws`, try `./install.sh -w <your_catkin_ws>`.
+
+### Testing the installation
+Display the setup of our demo task in OpenRAVE environment:
+```
+rosrun mobotscp display_demo_task.py
+```
+
+
+## Demo
+Firstly, make sure `robot.*` and `kinematics.*` folders from `mobotscp/data/reachability/` 
+are copied into `~/.openrave/` directory. This has been done if you installed MoboTSCP by script, 
+otherwise please copy them manually. 
+
+The task is for our mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
+drilling 336 targets on a mock wing. 
+
+To solve the task and play the simulation, run: 
+```
+rosrun mobotscp MoboTSCP_wing_drilling_demo.py
+```
+Computed clusters are visualized by different colors, and the poses for the base to visit each 
+cluster are also shown in corresponding colors, with arrows representing the base sequence.
 
 
 ## Focused Kinematic Reachability (FKR)
@@ -68,20 +89,9 @@ have already been copied into `~/.openrave/`. Newly generated data will also be 
 `~/.openrave/`. The script `scripts/generate_fkr.py` demonstrates how to generate FKR, analyze 
 FKR data for reachability limits, and visualization:
 ```
-rosrun mobotscp generate_fkr.py
+rosrun mobotscp generate_FKR.py
 ```
 Some screenshots of the visualization of FKR data & limits can be found in `data/figs`.
-
-
-## Simulation demo
-Run the simulation of mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
-performing a drilling task on a curved wing part:
-```
-rosrun mobotscp MoboTSCP_wing_drilling_demo.py
-```
-Different clusters are visualized by different colors, and the directions to visit the targets 
-are represented by small arrows. The poses for the base to visit each cluster are also shown 
-with corresponding colors, and big arrows illustrate the base tour.
 
 
 ## Troubleshoot

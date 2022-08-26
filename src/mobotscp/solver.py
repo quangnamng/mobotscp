@@ -247,7 +247,7 @@ class MoboTSCP(object):
         traj = ru.planning.plan_to_joint_configuration(robot, qgoal, params.planner, params.max_iters, \
                                                        params.max_ppiters, try_swap=params.try_swap)
         if traj is None:
-          raise Exception("Failed to compute trajectories, please try lower 'tsp_param.step_size'.")
+          raise Exception("Failed to compute trajectories, please try a different value for 'tsp_param.step_size'.")
       trajectories.append(traj)
     return trajectories
 

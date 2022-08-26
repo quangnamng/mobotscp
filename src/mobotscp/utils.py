@@ -155,7 +155,7 @@ class VisualizeSolution(object):
       i = self.base_tour[k]
       # > draw points at the base poses
       base_xyz = np.array(list(base_poses[i][:2])+[floor_z])
-      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=20, \
+      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=30, \
                                               color=self.colors[i%len(self.colors)]) )
       # > draw axes at the base poses
       base_trans = tr.euler_matrix(0, 0, base_poses[i][2], 'sxyz')

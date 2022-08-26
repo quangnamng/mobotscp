@@ -83,10 +83,11 @@ if __name__ == "__main__":
   ### Task Definition
   # Register the targets
   wing = env.GetKinBody('wing')
-  max_num_targets = 288   # the wing has 288 targets on front side and 48 targets on back side
-  # > use the 2nd line below to add azimuthal angles to the targets, otherwise comment it
+  max_num_targets = 336   # the first 288 targets on front side, and the next 48 targets on back side
+  # > use the 2nd-3rd lines below to add azimuthal angles to the targets, otherwise comment them
   azimuths = [0]*max_num_targets
-  azimuths = [np.deg2rad(46-(i%24)*4) for i in range(max_num_targets)]
+  azimuths = [np.deg2rad(46-(i%24)*4) for i in range(288)] + \
+              [np.deg2rad((i%8)*8-28) for i in range(288,max_num_targets)]
   # > register the first 'max_num_targets' targets
   targets = mtscp.utils.RegisterTargets(links=wing.GetLinks(), targets_name='hole', \
                                         max_targets=max_num_targets, add_azimuth=azimuths)
@@ -97,7 +98,7 @@ if __name__ == "__main__":
   logger.info("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
 
   # Define and discretize the floor
-  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., -0.4], \
+  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 1], \
                                        floor_yrange=[-1., 1.], floor_z = 0.)
 
 
@@ -112,7 +113,7 @@ if __name__ == "__main__":
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
   # SCP parameters: available options are 'SCPy', 'LPr', 'greedy'
-  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', point_maxiters=20, orient_maxiters=100)
+  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', point_maxiters=10, orient_maxiters=100)
 
   # TSP parameters
   tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome)
@@ -126,16 +127,16 @@ if __name__ == "__main__":
   # > kinematics parameters
   tsp_param.iktype = orpy.IkParameterizationType.Transform6D
   tsp_param.standoff = 0.04
-  tsp_param.step_size = np.pi/8
+  tsp_param.step_size = np.pi/6
   tsp_param.velocity_limits = velocity_limits
   tsp_param.acceleration_limits = acceleration_limits
   # > planning parameters
-  tsp_param.planner = 'BiRRT'   #options: 'BiRRT', 'BasicRRT'
+  tsp_param.planner = 'BiRRT' #options: 'BiRRT', 'BasicRRT'
   tsp_param.try_swap = True
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'trapezoidalretimer'  #options: 'parabolicsmoother', 'trapezoidalretimer', None
+  tsp_param.retimer = 'parabolicsmoother' #options: 'parabolicsmoother', 'trapezoidalretimer', None
   tsp_param.timestep = 0.02
 
   # Solve
@@ -148,11 +149,11 @@ if __name__ == "__main__":
   env.SetDefaultViewer()
   while env.GetViewer() is None:
     time.sleep(0.1)
-  Tcamera = tr.euler_matrix(*np.deg2rad([-147, 0, 180]))
-  Tcamera[:3,3] = [-0.25, 1.8, 3.2]
+  Tcamera = tr.euler_matrix(*np.deg2rad([-145, 0, 160]))
+  Tcamera[:3,3] = [0.5, 2.5, 4]
   viewer = env.GetViewer()
   viewer.SetCamera(Tcamera)
-  viewer.SetBkgndColor([.8, .85, .9])
+  viewer.SetBkgndColor([1., 1., 1.])
 
   # Visualize results: clusters of targets and base tour
   clusters = output["clusters"]
