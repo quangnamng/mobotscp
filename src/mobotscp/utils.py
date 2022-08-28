@@ -104,9 +104,9 @@ class RectangularFloor(object):
     * self.floor_z:  float
       The height of the floor w.r.t. world frame
     """
-    [floor_Xmin, floor_Xmax] = np.array(floor_xrange)//floor_gridsize
-    [floor_Ymin, floor_Ymax] = np.array(floor_yrange)//floor_gridsize
-    X, Y = np.mgrid[floor_Xmin:floor_Xmax, floor_Ymin:floor_Ymax]
+    [floor_Xmin, floor_Xmax] = np.floor( np.array(floor_xrange)/floor_gridsize )
+    [floor_Ymin, floor_Ymax] = np.floor( np.array(floor_yrange)/floor_gridsize )
+    X, Y = np.mgrid[floor_Xmin:floor_Xmax+1, floor_Ymin:floor_Ymax+1]
     self.floor_allpoints = np.c_[X.flat, Y.flat] * floor_gridsize
     self.floor_z = floor_z
 

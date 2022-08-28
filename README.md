@@ -65,10 +65,16 @@ otherwise please copy them manually.
 The task is for our mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
 drilling 336 targets on a mock wing. 
 
-To solve the task and play the simulation, run: 
+Demo 1: 
 ```
 rosrun mobotscp MoboTSCP_wing_drilling_demo.py
 ```
+
+Demo 2: 
+```
+rosrun mobotscp MoboTSCP_obstacle_drilling_demo.py
+```
+
 Computed clusters are visualized by different colors, and the poses for the base to visit each 
 cluster are also shown in corresponding colors, with arrows representing the base sequence.
 

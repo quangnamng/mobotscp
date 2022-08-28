@@ -1,0 +1,55 @@
+<launch>
+  <!-- launch file parameters -->
+  <arg name="namespace" default="cpr_r100_0018" />
+  <arg name="robot"     default="denso_ridgeback" />
+  <arg name="manip"     default="_drill" />
+  <arg name="config"    default="empty" />
+  <arg name="rate"      default="250.0" />
+  <arg name="frequency" default="50.0" />
+
+  <!-- Use only 1 of the below lines. 
+  * If you have your custom world file, specify "world_name" by your file path 
+    in the 2nd line, and commend the 1st line. 
+  * If you want to use the "empty_ground" or "race" worlds from denso_ridgeback 
+    metapackage, please specify "world" in the 1st line, and comment the 2nd line. 
+  -->
+  <arg name="world"      default="empty_ground" />
+  <!-- <arg name="world_name" default="$(find denso_ridgeback_gazebo)/worlds/empty_ground.world" /> -->
+
+  <!-- Spawn Pose -->
+  <arg name="PI"  value="3.1415926535897932" />
+  <arg name="x"   default="0" />
+  <arg name="y"   default="-2" />
+  <arg name="z"   default="0.1" />
+  <arg name="yaw" default="$(eval arg('PI') /2 )" />
+
+  <!-- Initial joint values: [0, -20, 130, 0, 70, -45] deg -->
+  <arg name="j1" default="0" />
+  <arg name="j2" default="$(eval arg('PI') /180 *(-20) )" />
+  <arg name="j3" default="$(eval arg('PI') /180 *130 )" />
+  <arg name="j4" default="0" />
+  <arg name="j5" default="$(eval arg('PI') /180 *70 )" />
+  <arg name="j6" default="$(eval arg('PI') /180 *(-45) )" />
+
+  <!-- load Gazebo world -->
+  <include file="$(find denso_ridgeback_gazebo)/launch/denso_ridgeback_world.launch">
+    <arg name="namespace"  value="$(arg namespace)" />
+    <arg name="robot"      value="$(arg robot)" />
+    <arg name="manip"      value="$(arg manip)" />
+    <arg name="config"     value="$(arg config)" />
+    <arg name="rate"       value="$(arg rate)" />
+    <arg name="frequency"  value="$(arg frequency)" />
+    <arg name="world"      value="$(arg world)" />
+    <!-- <arg name="world_name" value="$(arg world_name)" /> -->
+    <arg name="x"          value="$(arg x)" />
+    <arg name="y"          value="$(arg y)" />
+    <arg name="z"          value="$(arg z)" />
+    <arg name="yaw"        value="$(arg yaw)" />
+    <arg name="j1"         value="$(arg j1)" />
+    <arg name="j2"         value="$(arg j2)" />
+    <arg name="j3"         value="$(arg j3)" />
+    <arg name="j4"         value="$(arg j4)" />
+    <arg name="j5"         value="$(arg j5)" />
+    <arg name="j6"         value="$(arg j6)" />
+  </include>
+</launch>

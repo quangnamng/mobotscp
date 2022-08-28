@@ -119,7 +119,8 @@ class MoboTSCP(object):
           ik_solutions = ru.kinematics.find_ik_solutions(self.robot, ee_ray, self.tsp_param.iktype, \
                                                          collision_free=True, freeinc=self.tsp_param.step_size)
           if len(ik_solutions) == 0:
-            raise Exception('Failed to find IK solution for target {}'.format(j))
+            raise Exception("Failed to find IK solution for target {}, ".format(j), \
+                             "please try a different value for tsp_param.step_size.")
           # > add base pose into the arm solutions
           for s,q in enumerate(ik_solutions):
              ik_solutions[s] = np.insert(q, 6, base_poses[i])
@@ -247,7 +248,7 @@ class MoboTSCP(object):
         traj = ru.planning.plan_to_joint_configuration(robot, qgoal, params.planner, params.max_iters, \
                                                        params.max_ppiters, try_swap=params.try_swap)
         if traj is None:
-          raise Exception("Failed to compute trajectories, please try a different value for 'tsp_param.step_size'.")
+          raise Exception("Failed to compute trajectories, please try a different value for tsp_param.step_size.")
       trajectories.append(traj)
     return trajectories
 
@@ -258,14 +259,14 @@ class MoboTSCP(object):
     trajectories = self.compute_cspace_trajectories(self.robot, cgraph, ctour, self.tsp_param)
     # Retime trajectories to satisfy velocity and acceleration limits
     # > 'parabolicsmoother'
-    if retimer == 'parabolicsmoother':
+    if retimer == 'parabolicsmoother' or retimer == 'linearsmoother':
       i = 0
       for traj in trajectories:
         status = orpy.planningutils.SmoothAffineTrajectory(traj, maxvelocities=self.tsp_param.velocity_limits, \
                                                            maxaccelerations=self.tsp_param.acceleration_limits, \
-                                                           plannername='parabolicsmoother')
+                                                           plannername=retimer)
         if status != orpy.PlannerStatus.HasSolution:
-          print("[WARN] parabolicsmoother failed to retime trajectory {}.".format(i))
+          print("[WARN] {} failed to retime trajectory {}.".format(retimer, i))
         i += 1
     # > 'trapezoidalretimer'
     if retimer == 'trapezoidalretimer':

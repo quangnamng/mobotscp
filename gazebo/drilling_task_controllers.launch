@@ -1,0 +1,20 @@
+<launch>
+  <arg name="namespace"  default="cpr_r100_0018" />
+  <arg name="simulation" default="true" />
+  <arg name="denso"      default="true" />
+  <arg name="ridgeback"  default="true" />
+  <arg name="gripper"    default="false" />
+  <arg name="ftsensor"   default="false" />
+  <arg name="frequency"  default="50.0" />
+
+  <!-- load controllers -->
+  <include file="$(find denso_ridgeback_control)/launch/denso_ridgeback_trajectory_controllers.launch">
+    <arg name="namespace"  value="$(arg namespace)" />
+    <arg name="simulation" value="$(arg simulation)" />
+    <arg name="denso"      value="$(arg denso)" />
+    <arg name="ridgeback"  value="$(arg ridgeback)" />
+    <arg name="gripper"    value="$(arg gripper)" />
+    <arg name="ftsensor"   value="$(arg ftsensor)" />
+    <arg name="frequency"  value="$(arg frequency)" />
+  </include>
+</launch>

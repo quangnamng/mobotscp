@@ -148,7 +148,11 @@ def get_link_offset(robot, l0_name='link0', l1_name='link1'):
             link_1 = link
     p_l1 = link_1.GetTransform()[:3, 3]
     p_l0 = link_0.GetTransform()[:3, 3]
-    return p_l1 - p_l0
+    Tbase = robot.GetTransform()
+    Tbase[:3,3] = [0, 0, 0]
+    Tbaseinv = np.linalg.inv(Tbase)
+    offset_wrt_robot = np.dot(Tbaseinv[:3,:3], p_l1-p_l0)
+    return offset_wrt_robot
 
 def display_mayavi_ori_axes(xcolor=(1, 0, 0), ycolor=(0, 1, 0), zcolor=(0, 0, 1), line_width=3, scale_factor=10):
     from mayavi import mlab
