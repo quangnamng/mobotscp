@@ -84,8 +84,8 @@ if __name__ == "__main__":
   joint_limits = [robot.GetDOFLimits()[0]*0.95, robot.GetDOFLimits()[1]*0.95]
   robot.SetDOFLimits(joint_limits[0], joint_limits[1])
   # > set velocity & acceleration limits
-  velocity_limits = (robot.GetDOFVelocityLimits()*0.1).tolist()
-  acceleration_limits = [1., 1., 1., 1., 1., 1.]
+  velocity_limits = (robot.GetDOFVelocityLimits()*0.2).tolist()
+  acceleration_limits = (robot.GetDOFAccelerationLimits()*0.2).tolist()
   robot.SetDOFVelocityLimits(velocity_limits)
   robot.SetDOFAccelerationLimits(acceleration_limits)
   velocity_limits.extend([0.3, 0.3, 0.3])

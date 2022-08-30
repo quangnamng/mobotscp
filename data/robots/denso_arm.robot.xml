@@ -40,6 +40,7 @@
       <limitsdeg>-170.0 170.0</limitsdeg>
       <axis>0 0 1</axis>
       <maxveldeg>285.0</maxveldeg>
+      <maxaccel>33.8723</maxaccel>
       <!--<maxtorque>33.8723</maxtorque>-->
       <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link1</offsetfrom>
@@ -69,6 +70,7 @@
       <limitsdeg>-100.0 135.0</limitsdeg>
       <axis>0 1 0</axis>
       <maxveldeg>252.5</maxveldeg>
+      <maxaccel>26.2021</maxaccel>
       <!--<maxtorque>26.2021</maxtorque>-->
       <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link2</offsetfrom>
@@ -96,6 +98,7 @@
       <limitsdeg>-136.0 153.0</limitsdeg>
       <axis>0 1 0</axis>
       <maxveldeg>303.0</maxveldeg>
+      <maxaccel>35.5466</maxaccel>
       <!--<maxtorque>35.5466</maxtorque>-->
       <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link3</offsetfrom>
@@ -124,8 +127,8 @@
       <limitsdeg>-270.0 270.0</limitsdeg>
       <axis>0 0 1</axis>
       <maxveldeg>378.75</maxveldeg>
+      <maxaccel>70.149</maxaccel>
       <maxtorque>16.2</maxtorque>
-      <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link4</offsetfrom>
       <resolution>1</resolution>
     </joint>
@@ -152,8 +155,8 @@
       <limitsdeg>-120.0 120.0</limitsdeg>
       <axis>0 1 0</axis>
       <maxveldeg>378.75</maxveldeg>
+      <maxaccel>63.7717</maxaccel>
       <maxtorque>16.2</maxtorque>
-      <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link5</offsetfrom>
       <resolution>1</resolution>
     </joint>
@@ -180,8 +183,8 @@
       <limitsdeg>-360.0 360.0</limitsdeg>
       <axis>0 0 1</axis>
       <maxveldeg>606.0</maxveldeg>
+      <maxaccel>85.7091</maxaccel>
       <maxtorque>6.86</maxtorque>
-      <!-- <maxaccel>19.73356519</maxaccel> -->
       <offsetfrom>link6</offsetfrom>
       <resolution>1</resolution>
     </joint>

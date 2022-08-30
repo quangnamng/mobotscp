@@ -17,4 +17,5 @@
     <arg name="ftsensor"    value="$(arg ftsensor)" />
     <arg name="gripper"     value="$(arg gripper)" />
     <arg name="ip_denso"    value="$(arg ip_denso)" />
+  </include>
 </launch>
