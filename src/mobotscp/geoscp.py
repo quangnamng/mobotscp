@@ -200,6 +200,30 @@ def solver_greedy(n, m, E, maxiters=20):
   return sol, mincost
 
 
+def calculate_phidiff_phicen(target_phi):
+  # sort
+  phi = copy.copy(target_phi)
+  phi.sort()
+  # calculate phidiff
+  deltaphi = []
+  for i in range(len(phi)-1):
+    deltaphi += [phi[i+1] - phi[i]]
+  deltaphi += [phi[0] + 2*np.pi - phi[-1]]
+  phidiff = 2*np.pi - max(deltaphi)
+  # calculate phicen
+  ids = np.argmax(deltaphi)
+  if ids < len(phi)-1:
+    phi_lower = phi[ids+1]
+  else:
+    phi_lower = phi[0]
+  phicen = phi_lower + 0.5*phidiff
+  if phicen > np.pi:
+    phicen -= 2*np.pi
+  elif phicen <= -np.pi:
+    phicen += 2*np.pi
+  return phidiff, phicen
+
+
 def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
                  max_phidiff=np.pi/6, solver='SCPy', point_maxiters=20, orient_maxiters=200):
   ### Cluster points: solve SCP to find the least number of points on floor to cover all targets
@@ -240,17 +264,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
     tarids_per_chosenpt += [tarids_per_chosenpt_i]
     tarphi_per_chosenpt += [tarphi_per_chosenpt_i]
     # calculate max phi difference for each set
-    phidiff_per_chosenpt_i = max(tarphi_per_chosenpt_i) - min (tarphi_per_chosenpt_i)
-    phicen_per_chosenpt_i = min(tarphi_per_chosenpt_i) + 0.5*phidiff_per_chosenpt_i
-    if phidiff_per_chosenpt_i > np.pi:
-      new_max = max([x for x in tarphi_per_chosenpt_i if x<0]) + np.pi
-      new_min = min([x for x in tarphi_per_chosenpt_i if x>=0]) - np.pi
-      if phidiff_per_chosenpt_i > new_max-new_min:
-        phidiff_per_chosenpt_i = new_max-new_min
-        if new_max < abs(new_min):
-          phicen_per_chosenpt_i = (new_min+np.pi) + 0.5*phidiff_per_chosenpt_i
-        else:
-          phicen_per_chosenpt_i = (new_max-np.pi) - 0.5*phidiff_per_chosenpt_i
+    phidiff_per_chosenpt_i, phicen_per_chosenpt_i = calculate_phidiff_phicen(tarphi_per_chosenpt_i)
     phidiff_per_chosenpt += [phidiff_per_chosenpt_i]
     phicen_per_chosenpt += [phicen_per_chosenpt_i]
   # > assign targets into clusters
@@ -267,7 +281,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       # add current set into clusters
       cluster_i = tarids_per_chosenpt[i]
       clusters.append(cluster_i)
-      phi_cen = min(tarphi_per_chosenpt[i]) + 0.5*phidiff_per_chosenpt[i]
+      phi_cen = phicen_per_chosenpt[i]
       base_point_i = np.array(floor_chosenpoints[i]) - utils.z_rotation(arm_ori_wrt_base, phi_cen)[:2]
       arm_oris.append(floor_chosenpoints[i])
       base_poses.append( np.append(base_point_i, phi_cen) )
@@ -279,17 +293,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
             tarids_per_chosenpt[j+i+1].pop(elementid)
             tarphi_per_chosenpt[j+i+1].pop(elementid)
         if tarphi_per_chosenpt[j+i+1]:
-          phidiff_per_chosenpt[j+i+1] = max(tarphi_per_chosenpt[j+i+1]) - min(tarphi_per_chosenpt[j+i+1])
-          phicen_per_chosenpt[j+i+1] = min(tarphi_per_chosenpt[j+i+1]) + 0.5*phidiff_per_chosenpt[j+i+1]
-          if phidiff_per_chosenpt[j+i+1] > np.pi:
-            new_max = max([x for x in tarphi_per_chosenpt[j+i+1] if x<0]) + np.pi
-            new_min = min([x for x in tarphi_per_chosenpt[j+i+1] if x>=0]) - np.pi
-            if phidiff_per_chosenpt[j+i+1] > new_max-new_min:
-              phidiff_per_chosenpt[j+i+1] = new_max-new_min
-              if new_max < abs(new_min):
-                phicen_per_chosenpt[j+i+1] = (new_min+np.pi) + 0.5*phidiff_per_chosenpt[j+i+1]
-              else:
-                phicen_per_chosenpt[j+i+1] = (new_max-np.pi) - 0.5*phidiff_per_chosenpt[j+i+1]
+          phidiff_per_chosenpt[j+i+1], phicen_per_chosenpt[j+i+1] = calculate_phidiff_phicen(tarphi_per_chosenpt[j+i+1])
       i +=  1
       count = 0
     elif count >= (length-i):
@@ -310,17 +314,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
         else:
           tarids_per_chosenpt += [new_ids]
           tarphi_per_chosenpt += [new_phi]
-          phidiff_per_chosenpt_i = max(new_phi) - min(new_phi)
-          phicen_per_chosenpt_i = min(new_phi) + 0.5*phidiff_per_chosenpt_i
-          if max(new_phi) - min(new_phi) > np.pi:
-            new_max = max([x for x in new_phi if x<0]) + np.pi
-            new_min = min([x for x in new_phi if x>=0]) - np.pi
-            if phidiff_per_chosenpt_i > new_max-new_min:
-              phidiff_per_chosenpt_i = new_max-new_min
-              if new_max < abs(new_min):
-                phicen_per_chosenpt_i += (new_min+np.pi) + 0.5*phidiff_per_chosenpt_i
-              else:
-                phicen_per_chosenpt_i += (new_max-np.pi) - 0.5*phidiff_per_chosenpt_i
+          phidiff_per_chosenpt_i, phicen_per_chosenpt_i = calculate_phidiff_phicen(new_phi)
           phidiff_per_chosenpt += [phidiff_per_chosenpt_i]
           phicen_per_chosenpt += [phicen_per_chosenpt_i]
           floor_chosenpoints += [floor_chosenpoints[i]]

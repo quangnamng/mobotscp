@@ -67,8 +67,8 @@ if __name__ == "__main__":
   robot.SetActiveDOFs(manip.GetArmIndices(), \
                       robot.DOFAffine.X|robot.DOFAffine.Y|robot.DOFAffine.RotationAxis,[0,0,1])
   # > home config
-  base_home = [0., -2., np.pi/2]   # (x, y, yaw)
-  arm_home = np.deg2rad([0, -20, 130, 0, 70, 0])
+  base_home = [0, -2, np.pi/2]   # (x, y, yaw)
+  arm_home = np.deg2rad([0, -20, 130, 0, 70, -45])
   qhome = np.append(arm_home, base_home)
   with env:
     robot.SetActiveDOFValues(qhome)
@@ -88,8 +88,8 @@ if __name__ == "__main__":
   acceleration_limits = [1., 1., 1., 1., 1., 1.]
   robot.SetDOFVelocityLimits(velocity_limits)
   robot.SetDOFAccelerationLimits(acceleration_limits)
-  velocity_limits.extend([0.2, 0.2, 0.2])
-  acceleration_limits.extend([0.1, 0.1, 0.1])
+  velocity_limits.extend([0.3, 0.3, 0.3])
+  acceleration_limits.extend([0.05, 0.05, 0.05])
 
 
   ### Task Definition
@@ -125,7 +125,7 @@ if __name__ == "__main__":
                                            l0_name='denso_link0', l1_name='denso_link1', l2_name='denso_link2')
 
   # SCP parameters: available options are 'SCPy', 'LPr', 'greedy'
-  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', point_maxiters=20, orient_maxiters=100)
+  scp_param = mtscp.solver.SCPparameters(SCP_solver='SCPy', point_maxiters=10, orient_maxiters=100)
 
   # TSP parameters
   tsp_param = mtscp.solver.TSPparameters(Thome, qhome, phome)
@@ -148,8 +148,7 @@ if __name__ == "__main__":
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'parabolicsmoother' #options: 'parabolicsmoother', 'trapezoidalretimer', None
-  tsp_param.timestep = 0.02
+  tsp_param.retimer = 'parabolicsmoother'
 
   # Solve
   solver = mtscp.solver.MoboTSCP(robot, targets, floor, reach_param, scp_param, tsp_param)

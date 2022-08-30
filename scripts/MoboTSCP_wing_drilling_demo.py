@@ -136,8 +136,7 @@ if __name__ == "__main__":
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'parabolicsmoother' #options: 'parabolicsmoother', 'trapezoidalretimer', None
-  tsp_param.timestep = 0.02
+  tsp_param.retimer = 'parabolicsmoother' #options: 'parabolicsmoother', 'linearsmoother', None
 
   # Solve
   solver = mtscp.solver.MoboTSCP(robot, targets, floor, reach_param, scp_param, tsp_param)

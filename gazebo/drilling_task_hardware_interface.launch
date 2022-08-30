@@ -1,0 +1,20 @@
+<launch>
+  <!-- launch file parameters -->
+  <arg name="namespace"   default="cpr_r100_0018" />
+  <arg name="rate"        default="250.0" />
+  <arg name="frequency"   default="50.0" />
+  <arg name="denso"       default="true" />
+  <arg name="ftsensor"    default="false" />
+  <arg name="gripper"     default="false" />
+  <arg name="ip_denso"    default="192.168.0.55" />
+
+  <!-- load hardware interfaces -->
+  <include file="$(find denso_ridgeback_control)/launch/denso_ridgeback_hardware_interfaces.launch">
+    <arg name="namespace"   value="$(arg namespace)" />
+    <arg name="rate"        value="$(arg rate)" />
+    <arg name="frequency"   value="$(arg frequency)" />
+    <arg name="denso"       value="$(arg denso)" />
+    <arg name="ftsensor"    value="$(arg ftsensor)" />
+    <arg name="gripper"     value="$(arg gripper)" />
+    <arg name="ip_denso"    value="$(arg ip_denso)" />
+</launch>

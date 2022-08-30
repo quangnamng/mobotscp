@@ -258,7 +258,6 @@ class MoboTSCP(object):
     # Find trajectories 
     trajectories = self.compute_cspace_trajectories(self.robot, cgraph, ctour, self.tsp_param)
     # Retime trajectories to satisfy velocity and acceleration limits
-    # > 'parabolicsmoother'
     if retimer == 'parabolicsmoother' or retimer == 'linearsmoother':
       i = 0
       for traj in trajectories:
@@ -266,21 +265,8 @@ class MoboTSCP(object):
                                                            maxaccelerations=self.tsp_param.acceleration_limits, \
                                                            plannername=retimer)
         if status != orpy.PlannerStatus.HasSolution:
-          print("[WARN] {} failed to retime trajectory {}.".format(retimer, i))
+          print("[WARN] {} failed to retime trajectory {}, returned raw trajectory.".format(retimer, i))
         i += 1
-    # > 'trapezoidalretimer'
-    if retimer == 'trapezoidalretimer':
-      retimed_trajs = []
-      for traj in trajectories:
-        trapezoidalretimer = utils.RetimeOpenraveTrajectory(self.robot, traj, timestep=self.tsp_param.timestep, \
-                                                            Vmax=self.tsp_param.velocity_limits, \
-                                                            Amax=self.tsp_param.acceleration_limits)
-        retimed_traj, success = trapezoidalretimer.retime()
-        if not success:
-          print("[WARN] trapezoidalretimer failed to retime trajectory {}.".format(len(retimed_trajs)))
-          retimed_traj = traj
-        retimed_trajs.append(retimed_traj)
-      trajectories = retimed_trajs
     # Results
     traj_time =  time.time() - starttime
     print("  * traj_time = {} s".format(traj_time))
