@@ -253,7 +253,7 @@ class MoboTSCP(object):
     return trajectories
 
 
-  def get_trajectories(self, cgraph, ctour, retimer=None):
+  def get_trajectories(self, cgraph, ctour, retimer='parabolicsmoother'):
     starttime = time.time()
     # Find trajectories 
     trajectories = self.compute_cspace_trajectories(self.robot, cgraph, ctour, self.tsp_param)
@@ -304,7 +304,7 @@ class MoboTSCP(object):
     self.output["trajs"] = trajs
     self.output["traj_time"] = traj_time
     self.output["tsp_time"] = tsp_time
-    self.output["solver_time"] = scp_time + tsp_time
+    self.output["solver_time"] = scp_time + tsp_time + traj_time
     self.output["exe_time"] = self.compute_execution_time(trajs)
 
 
@@ -333,12 +333,12 @@ class MoboTSCP(object):
     task_tour, ttour_time = self.get_task_tour(clusters, Tbase, base_tour)
     # > find configuration-space tour
     cgraph, config_tour, ctour_time = self.get_configuration_tour(targets_taskiks, task_tour)
-    # > compute trajectories
-    trajs, traj_time = self.get_trajectories(cgraph, config_tour, self.tsp_param.retimer)
     # > record time used
     tsp_time = time.time() - starttime
     print("--stackTSP finished successfully.")
     print("  * tsp_time = {} s".format(tsp_time))
+    # > compute trajectories
+    trajs, traj_time = self.get_trajectories(cgraph, config_tour, self.tsp_param.retimer)
 
     # Results
     self.prepare_output(targets_reachids, targets_unreachids, clusters, base_poses, scp_time, \

@@ -14,8 +14,9 @@ import time
 import tf.transformations as tr
 #ROS
 import rospy
-from denso_ridgeback_control.conversions import ros_trajs_from_openrave_affined_traj
+from denso_ridgeback_control.conversions import ros_trajs_from_openrave_affined_traj, ros_trajs_from_openrave_mobile_traj
 from denso_ridgeback_control.whole_body_controllers import WB_Trajectory_Controller
+from esocstopp import esocstopp_retimer
 
 ##############################################################################################################
 # Input: 
@@ -184,9 +185,26 @@ if __name__ == "__main__":
   draw_ttour = np.array(output["task_tour"])[1:-1]-1
   max_traj_idx = len(output["trajs"])-1
   sim_starttime = time.time()
+  jerk_limits = [10.,10.,10.,10.,10.,10., 0.2, 0.2, 0.1]
   for i, traj in enumerate(output["trajs"]):
-    # OpenRAVE to ROS
-    [arm_traj, base_traj] = ros_trajs_from_openrave_affined_traj(robot.GetName(), traj, timestep)
+    # Retime traj if base does not move
+    spec = traj.GetConfigurationSpecification()
+    values_group = spec.GetGroupFromName('joint_values {0}'.format(robot.GetName()))
+    dof = values_group.dof
+    start_waypoint = traj.GetWaypoint(0).tolist() 
+    start_pose = start_waypoint[values_group.offset+dof:values_group.offset+dof+3]
+    end_waypoint = traj.GetWaypoint(traj.GetNumWaypoints()-1).tolist() 
+    end_pose = end_waypoint[values_group.offset+dof:values_group.offset+dof+3]
+    base_move_length = np.array(end_pose) - np.array(start_pose)
+    if np.isclose(np.linalg.norm(base_move_length), 0):
+      retimer = esocstopp_retimer.OpenraveRetimer(robot, traj, timestep, velocity_limits, \
+                                                  acceleration_limits, jerk_limits, 'scurve')
+      [traj, success] = retimer.retime()
+      # OpenRAVE to ROS
+      [arm_traj, base_traj] = ros_trajs_from_openrave_mobile_traj(robot.GetName(), traj)
+    else:
+      # OpenRAVE to ROS
+      [arm_traj, base_traj] = ros_trajs_from_openrave_affined_traj(robot.GetName(), traj, timestep)
     # ROS: move base and arm
     WBC_trajectory.set_trajectory(arm_traj, base_traj)
     WBC_trajectory.start(delay=0.5)
