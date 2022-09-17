@@ -154,13 +154,20 @@ if __name__ == "__main__":
   viewer.SetCamera(Tcamera)
   viewer.SetBkgndColor([1., 1., 1.])
 
-  # Visualize results: clusters of targets and base tour
+  # Visualize results: keep one of the options below, comment the other
+  # > visualize clusters and base tour
   clusters = output["clusters"]
   base_tour = output["base_tour"]
   base_poses = output["base_poses"]
   visual_solution = mtscp.utils.VisualizeSolution(targets, clusters, base_tour)
-  visual_solution.visualize_clusters(env, draw_arrows=False)
-  visual_solution.visualize_base_tour(env, base_poses, base_home, floor.floor_z)
+  visual_solution.visualize_clusters(env, draw_arrows=True)
+  visual_solution.visualize_base_tour(env, base_poses, base_home, floor.floor_z, draw_arrows=False)
+
+  # > visualize floor points
+  # floor_validids_per_tar = output["floor_validids_per_tar"]
+  # visual_floor = mtscp.utils.VisualizeFloor(targets, floor.floor_allpoints, floor_validids_per_tar)
+  # visual_floor.visualize_floor(env, floor.floor_z)
+
 
 
   ##### Execution

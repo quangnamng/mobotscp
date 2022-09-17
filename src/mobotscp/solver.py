@@ -282,11 +282,12 @@ class MoboTSCP(object):
     return execution_time
 
 
-  def prepare_output(self, targets_reachids, targets_unreachids, clusters, base_poses, scp_time, \
+  def prepare_output(self, targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, scp_time, \
                      base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
                      task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time):
     self.output["targets_reachids"] = targets_reachids
     self.output["targets_unreachids"] = targets_unreachids
+    self.output["floor_validids_per_tar"] = floor_validids_per_tar
     self.output["clusters"] = clusters
     self.output["clusters_no"] = len(clusters)
     self.output["base_poses"] = base_poses
@@ -341,7 +342,7 @@ class MoboTSCP(object):
     trajs, traj_time = self.get_trajectories(cgraph, config_tour, self.tsp_param.retimer)
 
     # Results
-    self.prepare_output(targets_reachids, targets_unreachids, clusters, base_poses, scp_time, \
+    self.prepare_output(targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, scp_time, \
                         base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
                         task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time)
     print("--MoboTSCP solver finished successfully.")

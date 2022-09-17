@@ -149,7 +149,7 @@ class VisualizeSolution(object):
           self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
                                                  color=self.colors[i%len(self.colors)]) )
 
-  def visualize_base_tour(self, env, base_poses, base_home, floor_z):
+  def visualize_base_tour(self, env, base_poses, base_home, floor_z, draw_arrows=False):
     base_xyz_home = np.array(list(base_home[:2])+[floor_z])
     for k in range(len(self.base_tour)):
       i = self.base_tour[k]
@@ -162,24 +162,75 @@ class VisualizeSolution(object):
       base_trans[:3,3] = base_xyz
       self.axes.append( ru.visual.draw_axes(env=env, transform=base_trans, dist=0.2, linewidth=4) )
       # > draw arrows representing base tour
-      if k == 0:                       # from home to first point
-        tour_len = np.linalg.norm(base_xyz-base_xyz_home)
-        tour_dir = (base_xyz-base_xyz_home)/tour_len
-        tour_ray = orpy.Ray(base_xyz_home, tour_dir)
-        self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
-                                             color=self.colors[i%len(self.colors)]) )
-      if k < len(self.base_tour)-1:    # from current point to next point
-        base_xyz_next = np.array(list(base_poses[self.base_tour[k+1]][:2])+[floor_z])
-        tour_len = np.linalg.norm(base_xyz_next-base_xyz)
-        tour_dir = (base_xyz_next-base_xyz)/tour_len
-        tour_ray = orpy.Ray(base_xyz, tour_dir)
-        self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
-                                             color=self.colors[i%len(self.colors)]) )
-      elif k == len(self.base_tour)-1: # from last poin back home
-        tour_len = np.linalg.norm(base_xyz_home-base_xyz)
-        tour_dir = (base_xyz_home-base_xyz)/tour_len
-        tour_ray = orpy.Ray(base_xyz, tour_dir)
-        self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
-                                             color=self.colors[i%len(self.colors)]) )
+      if draw_arrows:
+        if k == 0:                       # from home to first point
+          tour_len = np.linalg.norm(base_xyz-base_xyz_home)
+          tour_dir = (base_xyz-base_xyz_home)/tour_len
+          tour_ray = orpy.Ray(base_xyz_home, tour_dir)
+          self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
+                                              color=self.colors[i%len(self.colors)]) )
+        if k < len(self.base_tour)-1:    # from current point to next point
+          base_xyz_next = np.array(list(base_poses[self.base_tour[k+1]][:2])+[floor_z])
+          tour_len = np.linalg.norm(base_xyz_next-base_xyz)
+          tour_dir = (base_xyz_next-base_xyz)/tour_len
+          tour_ray = orpy.Ray(base_xyz, tour_dir)
+          self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
+                                              color=self.colors[i%len(self.colors)]) )
+        elif k == len(self.base_tour)-1: # from last poin back home
+          tour_len = np.linalg.norm(base_xyz_home-base_xyz)
+          tour_dir = (base_xyz_home-base_xyz)/tour_len
+          tour_ray = orpy.Ray(base_xyz, tour_dir)
+          self.tour.append( ru.visual.draw_ray(env=env, ray=tour_ray, dist=tour_len, linewidth=2, \
+                                               color=self.colors[i%len(self.colors)]) )
+
+
+class VisualizeFloor(object):
+  def __init__(self, targets, floor_allpoints, floor_validids_per_tar):
+    self.arrows = []
+    self.points = []
+    self.poses = []
+    self.targets_ray = targets.targets_ray
+    self.targets_array = targets.targets_array
+    self.floor_validpoints1 = floor_allpoints[floor_validids_per_tar[270]].tolist()
+    self.floor_validpoints2 = floor_allpoints[floor_validids_per_tar[280]].tolist()
+    self.floor_validpoints3 = floor_allpoints[floor_validids_per_tar[288]].tolist()
+
+  def visualize_floor(self, env, floor_z, arrow_len=0.2):
+    # > draw targets
+    targets_xyz = self.targets_array[270][:3]
+    tar_ray = self.targets_ray[270]
+    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
+                                             color=np.array([255,215,0])/255.) )
+    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
+                                           color=np.array([255,215,0])/255.) )
+    targets_xyz = self.targets_array[280][:3]
+    tar_ray = self.targets_ray[280]
+    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
+                                             color=np.array([0,139,139])/255.) )
+    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
+                                           color=np.array([0,139,139])/255.) )
+    targets_xyz = self.targets_array[288][:3]
+    tar_ray = self.targets_ray[288]
+    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
+                                             color=np.array([147,112,219])/255.) )
+    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
+                                           color=np.array([147,112,219])/255.) )
+    # floor
+    for i in range(len(self.floor_validpoints1)):
+      base_xyz = np.array(list(self.floor_validpoints1[i][:2])+[floor_z])
+      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=5, \
+                                              color=np.array([255,215,0])/255.) )
+    for i in range(len(self.floor_validpoints2)):
+      base_xyz = np.array(list(self.floor_validpoints2[i][:2])+[floor_z]) + np.array([0.005, 0.005, 0])
+      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=3, \
+                                              color=np.array([0,139,139])/255.) )
+    for i in range(len(self.floor_validpoints3)):
+      base_xyz = np.array(list(self.floor_validpoints3[i][:2])+[floor_z])
+      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=5, \
+                                              color=np.array([147,112,219])/255.) )
+
 
 # END
