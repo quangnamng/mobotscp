@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from collections import defaultdict
-from mobotscp import geoscp, utils
+from mobotscp import clustering
 import copy
 import itertools
 import networkx as nx
@@ -282,16 +282,16 @@ class MoboTSCP(object):
     return execution_time
 
 
-  def prepare_output(self, targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, scp_time, \
+  def prepare_output(self, targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, cluster_time, \
                      base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
-                     task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time):
+                     task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, sequence_time):
     self.output["targets_reachids"] = targets_reachids
     self.output["targets_unreachids"] = targets_unreachids
     self.output["floor_validids_per_tar"] = floor_validids_per_tar
     self.output["clusters"] = clusters
     self.output["clusters_no"] = len(clusters)
     self.output["base_poses"] = base_poses
-    self.output["scp_time"] = scp_time
+    self.output["cluster_time"] = cluster_time
     self.output["base_tour"] = base_tour
     self.output["btour_time"] = btour_time
     self.output["target_taskiks"] = targets_taskiks
@@ -304,28 +304,28 @@ class MoboTSCP(object):
     self.output["ctour_time"] = ctour_time
     self.output["trajs"] = trajs
     self.output["traj_time"] = traj_time
-    self.output["tsp_time"] = tsp_time
-    self.output["solver_time"] = scp_time + tsp_time + traj_time
+    self.output["sequence_time"] = sequence_time
+    self.output["solver_time"] = cluster_time + sequence_time + traj_time
     self.output["exe_time"] = self.compute_execution_time(trajs)
 
 
   def solve(self):
-    # geoSCP: cluster all reachable targets into clusters
+    # Clustering: cluster all reachable targets into clusters
     starttime = time.time()
     # > connect targets to floor points
-    tar2floor = geoscp.ConnectTargets2Floor(self.targets_array, self.floor, self.reach_param)
+    tar2floor = clustering.ConnectTargets2Floor(self.targets_array, self.floor, self.reach_param)
     floor_validids_per_tar, targets_reachids, targets_unreachids = tar2floor.connect()
     # > assign all reachable targets into clusters
     clusters, arm_oris, base_poses, Tbase = \
-      geoscp.solve_geoSCP(self.targets_array, targets_reachids, self.floor, floor_validids_per_tar, \
+      clustering.solve(self.targets_array, targets_reachids, self.floor, floor_validids_per_tar, \
                           self.reach_param.arm_ori_wrt_base, self.reach_param.max_phidiff, \
                           self.scp_param.SCP_solver, self.scp_param.point_maxiters, self.scp_param.orient_maxiters)
-    scp_time = time.time() - starttime
-    print("  * scp_time = {} s".format(scp_time))
+    clus_time = time.time() - starttime
+    print("  * cluster_time = {} s".format(clus_time))
 
-    # stackTSP: find optimal sequence to visit all targets
+    # Sequencing: find optimal sequence to visit all targets
     starttime = time.time()
-    print("--stackTSP: Solving sequencing...")
+    print("--Sequencing...")
     # > find base tour
     base_tour, btour_time = self.get_base_tour(Tbase)
     # > find IK solution for targets in each cluster
@@ -335,19 +335,19 @@ class MoboTSCP(object):
     # > find configuration-space tour
     cgraph, config_tour, ctour_time = self.get_configuration_tour(targets_taskiks, task_tour)
     # > record time used
-    tsp_time = time.time() - starttime
-    print("--stackTSP finished successfully.")
-    print("  * tsp_time = {} s".format(tsp_time))
+    seq_time = time.time() - starttime
+    print("--Sequencing finished successfully.")
+    print("  * sequence_time = {} s".format(seq_time))
     # > compute trajectories
     trajs, traj_time = self.get_trajectories(cgraph, config_tour, self.tsp_param.retimer)
+    print("  * traj_time = {} s".format(traj_time))
 
     # Results
-    self.prepare_output(targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, scp_time, \
+    self.prepare_output(targets_reachids, targets_unreachids, floor_validids_per_tar, clusters, base_poses, clus_time, \
                         base_tour, btour_time, targets_taskiks, targets_taskids, ik_time, \
-                        task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, tsp_time)
-    print("--MoboTSCP solver finished successfully.")
+                        task_tour, ttour_time, cgraph, config_tour, ctour_time, trajs, traj_time, seq_time)
+    print("--Solver finished successfully.")
     print("  * solver_time = {} s".format(self.output["solver_time"]))
-    print("  * exe_time = {} s".format(self.output["exe_time"]))
     return self.output
 
 # END

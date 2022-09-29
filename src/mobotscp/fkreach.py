@@ -6,7 +6,6 @@ import h5py
 import numpy as np
 import openravepy as orpy
 import os
-import raveutils as ru
 import tf.transformations as tr
 import time
 

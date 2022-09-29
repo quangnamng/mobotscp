@@ -9,19 +9,15 @@ import numpy as np
 import tf.transformations as tr
 
 ##############################################################################################################
-### Solve the geometric Set Cover Problem (geoSCP)
-# geoSCP input: 
+### Task-space Clustering
+# Input: 
 #   * floor_validids_per_tar, floor_validids, targets_reachable: output of mobotscp.connection
-# SCP input:
-#   * U = {e1, e2, ..., en}: the universe is a set of n elements
+#   * U = {u1, u2, ..., un}: the universe is a set of n elements
 #   * S = {S1, S2, ..., Sm}: the collection of m sets, each is a subset of U
-#   * E = {E1, E2, ..., En}: the collection of n sets Ei, each records the indices of Sj's that cover ei
-# SCP output:
+#   * E = {E1, E2, ..., En}: the collection of n sets, each records the indices of Sj's that cover ui
+# Output:
 #   * sol = minimum subset of indices {1, 2, ..., m} such that the corresponding sets cover all elements of U
-# geoSCP output:
-#   * floor_chosenids: indices of chosen points on the floor that together cover all targets 
-#   * cost: minimum number of points on the floor to cover all targets 
-#   * SCPtime: time used to solve the Set Cover Problem (SCP)
+#   * floor_chosenids: indices of chosen points on the floor that together cover all targets
 ##############################################################################################################
 
 
@@ -62,7 +58,7 @@ class ConnectTargets2Floor(object):
     self.Rmax = reach_param.Rmax
 
   def connect(self):
-    print("--geoSCP: Connecting each target with valid points on the floor...")
+    print("--Clustering: connecting each target with valid points on the floor...")
     # Sets of floor's valid indices
     floor_validids_per_tar = []
     targets_reachable = []
@@ -100,7 +96,7 @@ def get_math_model(floor_validids_per_tar, floor_validids, targets_reachable):
   m = len(floor_validids)
   # U: universe of n elements
   U = targets_reachable
-  # E: collection of sets of indices of sets that cover each element
+  # E: collection of sets of indices of sets that cover each element of U
   E = []
   for i in targets_reachable:
     sets_per_element = []
@@ -224,12 +220,12 @@ def calculate_phidiff_phicen(target_phi):
   return phidiff, phicen
 
 
-def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
+def solve(targets_array, targets_reachids, floor, floor_validids_per_tar, arm_ori_wrt_base=[0.,0.,0.], \
                  max_phidiff=np.pi/6, solver='SCPy', point_maxiters=20, orient_maxiters=200):
   ### Cluster points: solve SCP to find the least number of points on floor to cover all targets
   floor_validids = np.unique(np.concatenate(floor_validids_per_tar)).astype(int).tolist()
   n, m, E, S = get_math_model(floor_validids_per_tar, floor_validids, targets_reachids)
-  print("--geoSCP: Solving SCP using '{}' solver...".format(solver))
+  print("--Clustering: solving SCP using '{}' solver...".format(solver))
   print("  * Size of universe: n = {}".format(n))
   print("  * Total number of sets in collection: m = {}".format(m))
   if solver=='SCPy':
@@ -246,7 +242,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   print("  * min total cost = {}".format(cost))
 
   ### Assign targets into clusters based on orientations
-  print("--geoSCP: Assigning targets into clusters...")
+  print("--Clustering: assigning targets into clusters...")
   # > get targets' indices & phi for each chosen floor point
   tarids_per_chosenpt = []
   tarphi_per_chosenpt = []
@@ -337,7 +333,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
       count += 1
   # > check maxiters
   if i_check >= orient_maxiters:
-    raise ValueError(("geoSCP failed: max iterations ({}) reached during assigning targets into clusters. " \
+    raise ValueError(("Clustering failed: max iterations (= {}) reached during assigning targets into clusters. " \
                       "Please increase 'maxiters' value.").format(orient_maxiters))
 
   ### Results
@@ -346,8 +342,8 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   for i in range(len(clusters)):
     tar_check += len(clusters[i])
   if tar_check != len(targets_reachids):
-    raise ValueError(("geoSCP failed: number of targets in clusters ({}) does not match " \
-                      "number of reachable targets ({}).").format(tar_check, len(targets_reachids)))
+    raise ValueError(("Clustering failed: number of targets in clusters (= {}) does not match " \
+                      "number of reachable targets (= {}).").format(tar_check, len(targets_reachids)))
   # > calculate base transform
   Tbase = []
   for i in range(len(base_poses)):
@@ -362,7 +358,7 @@ def solve_geoSCP(targets_array, targets_reachids, floor, floor_validids_per_tar,
   print("  * clusters of targets = \n{}".format(clusters))
   print("  * corresponding arm's origin at (x[m], y[m]) = \n{}".format(arm_oris))
   print("  * corresponding base poses (x[m], y[m], yaw[rad]) = \n{}".format(base_poses))
-  print("--geoSCP finished successfully.")
+  print("--Clustering finished successfully.")
   return clusters, arm_oris, base_poses, Tbase
 
 # END

@@ -14,7 +14,7 @@ if __name__ == "__main__":
   ### OpenRAVE Environment Setup
   # Setup world
   env = orpy.Environment()
-  world_xml = 'worlds/wing_drilling_task.env.xml'
+  world_xml = 'worlds/drilling_task.env.xml'
   if not env.Load(world_xml):
     print('Failed to load: {0}'.format(world_xml))
     raise IOError

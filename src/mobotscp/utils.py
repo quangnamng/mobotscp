@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import copy
-import math
 import numpy as np
 import openravepy as orpy
 import raveutils as ru
@@ -113,6 +112,15 @@ class RectangularFloor(object):
 
 class VisualizeSolution(object):
   def __init__(self, targets, clusters, base_tour):
+    self.arrows = []
+    self.points = []
+    self.poses = []
+    self.axes = []
+    self.tour = []
+    self.targets_ray = targets.targets_ray
+    self.targets_array = targets.targets_array
+    self.clusters = clusters
+    self.base_tour = base_tour
     self.colors = [] 
     self.colors += [np.array([255,215,0])/255.]     # gold
     self.colors += [np.array([0,139,139])/255.]     # dark cyan
@@ -124,15 +132,6 @@ class VisualizeSolution(object):
     self.colors += [np.array([139,69,19])/255.]     # saddle brown
     self.colors += [np.array([255,140,0])/255.]     # dark orange
     self.colors += [np.array([255,255,255])/255.]   # white
-    self.arrows = []
-    self.points = []
-    self.poses = []
-    self.axes = []
-    self.tour = []
-    self.targets_ray = targets.targets_ray
-    self.targets_array = targets.targets_array
-    self.clusters = clusters
-    self.base_tour = base_tour
 
   def visualize_clusters(self, env, draw_arrows=False, arrow_len=0.07):
     for k in range(len(self.clusters)):
@@ -185,52 +184,42 @@ class VisualizeSolution(object):
 
 
 class VisualizeFloor(object):
-  def __init__(self, targets, floor_allpoints, floor_validids_per_tar):
+  def __init__(self, targets, floor_allpoints, floor_validids_per_tar, floor_z):
     self.arrows = []
     self.points = []
-    self.poses = []
+    self.floorpts = []
     self.targets_ray = targets.targets_ray
     self.targets_array = targets.targets_array
-    self.floor_validpoints1 = floor_allpoints[floor_validids_per_tar[270]].tolist()
-    self.floor_validpoints2 = floor_allpoints[floor_validids_per_tar[280]].tolist()
-    self.floor_validpoints3 = floor_allpoints[floor_validids_per_tar[288]].tolist()
+    self.floor_allpoints = floor_allpoints
+    self.floor_validids_per_tar = floor_validids_per_tar
+    self.floor_z = floor_z
+    self.colors = [] 
+    self.colors += [np.array([144,238,144])/255.]   # light green
+    self.colors += [np.array([255,140,0])/255.]     # dark orange
+    self.colors += [np.array([219,112,147])/255.]   # pale violet red
+    self.colors += [np.array([147,112,219])/255.]   # medium purple
+    self.colors += [np.array([245,222,179])/255.]   # wheat
+    self.colors += [np.array([173,255,47])/255.]    # green yellow
+    self.colors += [np.array([255,215,0])/255.]     # gold
+    self.colors += [np.array([0,139,139])/255.]     # dark cyan
+    self.colors += [np.array([139,69,19])/255.]     # saddle brown
+    self.colors += [np.array([255,255,255])/255.]   # white
 
-  def visualize_floor(self, env, floor_z, arrow_len=0.2):
-    # > draw targets
-    targets_xyz = self.targets_array[270][:3]
-    tar_ray = self.targets_ray[270]
-    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
-    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
-                                             color=np.array([255,215,0])/255.) )
-    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
-                                           color=np.array([255,215,0])/255.) )
-    targets_xyz = self.targets_array[280][:3]
-    tar_ray = self.targets_ray[280]
-    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
-    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
-                                             color=np.array([0,139,139])/255.) )
-    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
-                                           color=np.array([0,139,139])/255.) )
-    targets_xyz = self.targets_array[288][:3]
-    tar_ray = self.targets_ray[288]
-    tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
-    self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
-                                             color=np.array([147,112,219])/255.) )
-    self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
-                                           color=np.array([147,112,219])/255.) )
-    # floor
-    for i in range(len(self.floor_validpoints1)):
-      base_xyz = np.array(list(self.floor_validpoints1[i][:2])+[floor_z])
-      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=5, \
-                                              color=np.array([255,215,0])/255.) )
-    for i in range(len(self.floor_validpoints2)):
-      base_xyz = np.array(list(self.floor_validpoints2[i][:2])+[floor_z]) + np.array([0.005, 0.005, 0])
-      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=3, \
-                                              color=np.array([0,139,139])/255.) )
-    for i in range(len(self.floor_validpoints3)):
-      base_xyz = np.array(list(self.floor_validpoints3[i][:2])+[floor_z])
-      self.poses.append( ru.visual.draw_point(env=env, point=base_xyz, size=5, \
-                                              color=np.array([147,112,219])/255.) )
-
+  def visualize(self, env, show_tar_ids, arrow_len=0.2):
+    for k, id in enumerate(show_tar_ids):
+      # > draw targets
+      targets_xyz = self.targets_array[id][:3]
+      tar_ray = self.targets_ray[id]
+      tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
+      self.points.append( ru.visual.draw_point(env=env, point=targets_xyz, size=5, \
+                                               color=self.colors[k%len(self.colors)]) )
+      self.arrows.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=0., \
+                                             color=self.colors[k%len(self.colors)]) )
+      # > draw valid floor points
+      floor_validpoints = self.floor_allpoints[self.floor_validids_per_tar[id]].tolist()
+      for i in range(len(floor_validpoints)):
+        floorpt_xyz = np.array(list(floor_validpoints[i][:2])+[self.floor_z]) + k*np.array([0.01, 0.01, 0])
+        self.floorpts.append( ru.visual.draw_point(env=env, point=floorpt_xyz, size=5, \
+                                                   color=self.colors[k%len(self.colors)]) )
 
 # END

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-#MoboTSCP
+# MoboTSCP
 import mobotscp as mtscp
-#utils
-import criutils as cu
+# Utils
 import IPython
-import logging
 import numpy as np
 import openravepy as orpy
 import robotsp as rtsp
@@ -12,13 +10,18 @@ import raveutils as ru
 import signal
 import time
 import tf.transformations as tr
+# ROS
+import rospy
+from denso_ridgeback_control.conversions import ros_trajs_from_openrave_affined_traj
+from denso_ridgeback_control.whole_body_controllers import WB_Trajectory_Controller
+
 
 ##############################################################################################################
 # Input: 
 #   * robot model: mobile_manipulator_drill
 #   * task: drill on all targets on the wing surface
 # Output: 
-#   * cluster the task into sub-tasks by assigning all targets into groups
+#   * cluster the task-space by assigning all targets into clusters
 #   * find optimal drilling sequence to complete the task with minimum base's moves
 ##############################################################################################################
 
@@ -29,24 +32,32 @@ def exit_handler(signum, frame):
   env.Destroy()
   exit()
 
+namespace = 'cpr_r100_0018'
+
 
 if __name__ == "__main__":
   # Detect Ctrl+C signal
   signal.signal(signal.SIGINT, exit_handler)
 
-  # Configure the logger
-  logger = logging.getLogger('MoboTSCP_demo')
-  cu.logger.initialize_logging(format_level=logging.INFO)
+  # Initialize ROS node
+  rospy.init_node('drilling_task')
+
+  # Connect to the hardware interface
+  WBC_trajectory = WB_Trajectory_Controller(namespace, timeout=10.0)
+  WBC_rate = WBC_trajectory.rate
+  timestep = 1./WBC_rate
+  print("Whole-body controller rate: {0} Hz".format(WBC_rate))
+  print("Choose timestep = {0} s".format(timestep))
 
 
   ### OpenRAVE Environment Setup
   # Setup world
   env = orpy.Environment()
-  world_xml = 'worlds/wing_drilling_task.env.xml'
+  world_xml = 'worlds/drilling_task.env.xml'
   if not env.Load(world_xml):
-    logger.error('Failed to load: {0}'.format(world_xml))
+    rospy.loginfo('Failed to load: {0}'.format(world_xml))
     raise IOError
-  logger.info('Loaded OpenRAVE environment: {}'.format(world_xml))
+  rospy.loginfo('Loaded OpenRAVE environment: {}'.format(world_xml))
   orpy.RaveSetDebugLevel(orpy.DebugLevel.Fatal)
 
   # Setup robot and manipulator
@@ -55,8 +66,8 @@ if __name__ == "__main__":
   robot.SetActiveDOFs(manip.GetArmIndices(), \
                       robot.DOFAffine.X|robot.DOFAffine.Y|robot.DOFAffine.RotationAxis,[0,0,1])
   # > home config
-  base_home = [-2.0, 0., 0.]   # (x, y, yaw)
-  arm_home = np.deg2rad([0, -20, 130, 0, 70, 0])
+  base_home = [0, -2, np.pi/2]   # (x, y, yaw)
+  arm_home = np.deg2rad([0, -20, 130, 0, 70, -45])
   qhome = np.append(arm_home, base_home)
   with env:
     robot.SetActiveDOFValues(qhome)
@@ -65,19 +76,19 @@ if __name__ == "__main__":
   # > load IKFast and links stats
   iktype = orpy.IkParameterizationType.Transform6D
   if not ru.kinematics.load_ikfast(robot, iktype):
-    logger.error('Failed to load IKFast {0}'.format(iktype.name))
+    rospy.loginfo('Failed to load IKFast {0}'.format(iktype.name))
     raise IOError
   success = ru.kinematics.load_link_stats(robot, xyzdelta=0.04)
   # > narrow joint limits for safety
   joint_limits = [robot.GetDOFLimits()[0]*0.95, robot.GetDOFLimits()[1]*0.95]
   robot.SetDOFLimits(joint_limits[0], joint_limits[1])
   # > set velocity & acceleration limits
-  velocity_limits = (robot.GetDOFVelocityLimits()*0.1).tolist()
-  acceleration_limits = [1., 1., 1., 1., 1., 1.]
+  velocity_limits = (robot.GetDOFVelocityLimits()*0.2).tolist()
+  acceleration_limits = (robot.GetDOFAccelerationLimits()*0.2).tolist()
   robot.SetDOFVelocityLimits(velocity_limits)
   robot.SetDOFAccelerationLimits(acceleration_limits)
-  velocity_limits.extend([0.2, 0.2, 0.2])
-  acceleration_limits.extend([0.1, 0.1, 0.1])
+  velocity_limits.extend([0.3, 0.3, 0.3])
+  acceleration_limits.extend([0.05, 0.05, 0.05])
 
 
   ### Task Definition
@@ -86,20 +97,20 @@ if __name__ == "__main__":
   max_num_targets = 336   # the first 288 targets on front side, and the next 48 targets on back side
   # > use the 2nd-3rd lines below to add azimuthal angles to the targets, otherwise comment them
   azimuths = [0]*max_num_targets
-  azimuths = [np.deg2rad(46-(i%24)*4) for i in range(288)] + \
-              [np.deg2rad((i%8)*8-28) for i in range(288,max_num_targets)]
+  azimuths = [np.deg2rad(36.8-(i%24)*3.2) for i in range(288)] + \
+              [np.deg2rad((i%24)-11.5) for i in range(288,max_num_targets)]
   # > register the first 'max_num_targets' targets
   targets = mtscp.utils.RegisterTargets(links=wing.GetLinks(), targets_name='hole', \
                                         max_targets=max_num_targets, add_azimuth=azimuths)
-  logger.info("Number of targets: {}".format(len(targets.targets_ray)))
+  rospy.loginfo("Number of targets: {}".format(len(targets.targets_ray)))
   targets_theta = np.arccos(targets.targets_array[:,-1])
   theta_deg_min = np.rad2deg(min(targets_theta))
   theta_deg_max = np.rad2deg(max(targets_theta))
-  logger.info("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
+  rospy.loginfo("Range of targets' polar angles: {}-{} deg".format(theta_deg_min, theta_deg_max))
 
   # Define and discretize the floor
-  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 1], \
-                                       floor_yrange=[-1., 1.], floor_z = 0.)
+  floor = mtscp.utils.RectangularFloor(floor_gridsize=0.1, floor_xrange=[-1., 1.], \
+                                       floor_yrange=[-1.5, 0.5], floor_z = 0.)
 
 
   ### MoboTSCP Solver
@@ -136,7 +147,7 @@ if __name__ == "__main__":
   tsp_param.max_iters = 100
   tsp_param.max_ppiters = 50
   # > time-parameterize the trajectories to satisfy velocity_limits & acceleration_limits
-  tsp_param.retimer = 'parabolicsmoother' #options: 'parabolicsmoother', 'linearsmoother', None
+  tsp_param.retimer = 'parabolicsmoother'
 
   # Solve
   solver = mtscp.solver.MoboTSCP(robot, targets, floor, reach_param, scp_param, tsp_param)
@@ -164,28 +175,46 @@ if __name__ == "__main__":
 
 
   ##### Execution
+  # OpenRAVE to ROS trajectories
+  trajs = output["trajs"]
+  arm_trajs = []
+  base_trajs = []
+  for traj in trajs:
+    [arm_traj, base_traj] = ros_trajs_from_openrave_affined_traj(robot.GetName(), traj, timestep)
+    arm_trajs.append(arm_traj)
+    base_trajs.append(base_traj)
+
   # Execute the output trajectories
   robot.SetActiveDOFValues(output["cgraph"].node[output["config_tour"][0]]['value'])
   raw_input("Press Enter to start the robot...\n")
-  logger.info("Executing the output trajectories...")
+  rospy.loginfo("Executing the output trajectories...")
   draws = []
   draw_ttour = np.array(output["task_tour"])[1:-1]-1
   max_traj_idx = len(output["trajs"])-1
-  sim_starttime = time.time()
-  for i, traj in enumerate(output["trajs"]):
+  real_starttime = time.time()
+  for i, traj in enumerate(trajs):
+    arm_traj = arm_trajs[i]
+    base_traj = base_trajs[i]
+    # ROS: move base and arm
+    WBC_trajectory.set_trajectory(arm_traj, base_traj)
+    WBC_trajectory.start(delay=0.5)
+    # OpenRAVE: move
     robot.GetController().SetPath(traj)
+    # wait for all controllers to finish
+    WBC_trajectory.wait(timeout=10.0)
     robot.WaitForController(0)
+    # draw
     if (max_traj_idx-i):
       arrow_len = tsp_param.standoff
       tar_ray = targets.targets_ray[ (output["target_taskids"])[draw_ttour[i]] ]
       tar_ray = orpy.Ray(tar_ray.pos()-arrow_len*tar_ray.dir(), tar_ray.dir())
       draws.append( ru.visual.draw_ray(env=env, ray=tar_ray, dist=arrow_len, linewidth=1, \
                                        color=np.array([255, 0, 0])/255.) )
-  sim_time = time.time() - sim_starttime
-  logger.info("Executed all trajectories in: {} s".format(sim_time))
+  output["real_exe_time"] = time.time() - real_starttime
+  rospy.loginfo("Executed all trajectories in: real_exe_time = {} s".format(output["real_exe_time"]))
 
 
   # Clear and exit
-  logger.info("Finished.")
+  rospy.loginfo("Finished.")
   IPython.embed()
 # END

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 import fkreach
-import geoscp
+import clustering
 import solver
 import utils

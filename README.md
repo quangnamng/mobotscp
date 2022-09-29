@@ -1,5 +1,5 @@
-# MoboTSCP: Mobile Robot's Task Sequencing and Clustering Problem
-MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clustering Problem.
+# mobotscp
+ROS package for "Task-Space Clustering for Mobile Manipulator Task Sequencing"
 
 
 ## Getting started
@@ -10,13 +10,13 @@ MoboTSCP is a ROS package for solving the Mobile Robot's Task Sequencing and Clu
 sudo apt-get install ros-$ROS_DISTRO-gazebo-ros-pkgs ros-$ROS_DISTRO-gazebo-ros-control
 sudo apt-get install ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers
 ```
-* OpenRAVE 0.9.0 (MoboTSCP may not work with other versions)
+* OpenRAVE 0.9.0 (mobotscp may not work with other versions)
 ```
 # clone the repository
 cd && git clone https://github.com/crigroup/openrave-installation.git
 cd openrave-installation
 
-# In Ubuntu 18.04, use the next line to check out an old commit for OpenRAVE 0.9.0
+# in Ubuntu 18.04, use the next line to check out an old commit for OpenRAVE 0.9.0
 git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 
 # install using scripts
@@ -40,7 +40,7 @@ Other dependencies are specified in `.rosinstall` file and will be installed usi
 during the installation step below.
 
 ### Installation
-After installing all prerequisites above, clone and install MoboTSCP using the provided script: 
+After installing all prerequisites above, clone and install mobotscp using the provided script: 
 ```
 cd ~/<your_catkin_ws>/src
 git clone https://github.com/nqnam1/mobotscp.git
@@ -53,59 +53,71 @@ Note: if your ROS workspace directory is not named `catkin_ws`, try `./install.s
 ### Testing the installation
 Display the setup of our demo task in OpenRAVE environment:
 ```
-rosrun mobotscp display_demo_task.py
+rosrun mobotscp display_task.py
 ```
 
 
 ## Demo
-Firstly, make sure `robot.*` and `kinematics.*` folders from `mobotscp/data/reachability/` 
-are copied into `~/.openrave/` directory. This has been done if you installed MoboTSCP by script, 
-otherwise please copy them manually. 
+Task: mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
+drilling 336 targets on the surface of a mock wing. 
 
-The task is for our mobile manipulator (Denso VS087 arm mounted on Clearpath Ridgeback base) 
-drilling 336 targets on a mock wing. 
+Solution: computed clusters are visualized by different colors, and the poses for the base to 
+visit each cluster are shown in corresponding colors.
 
-Demo 1: 
-```
-rosrun mobotscp MoboTSCP_wing_drilling_demo.py
-```
+Make sure `robot.*` and `kinematics.*` folders from `data/reachability/` 
+have been copied into `~/.openrave/` directory. 
+This has been done if you installed mobotscp by script, otherwise please copy those folders manually. 
 
-Demo 2: 
+For simulation in OpenRAVE environment, simply run:
 ```
-rosrun mobotscp MoboTSCP_obstacle_drilling_demo.py
+rosrun mobotscp OpenRAVE_drilling_task.py
 ```
 
-Computed clusters are visualized by different colors, and the poses for the base to visit each 
-cluster are also shown in corresponding colors, with arrows representing the base sequence.
+
+## ROS + Gazebo/hardware
+We follow the plug-and-play concept: 
+* mobotscp plays as a solver to the Mobile Manipulator Task Sequencing. 
+* to implement mobotscp on a robot, such as in Gazebo simulation or hardware experiment, 
+robot models and Gazebo/hardware supporting files should be stored in a separate package.  
+
+Gazebo simulation: requires [denso_ridgeback](https://github.com/nqnam1/denso_ridgeback.git)
+```
+# Terminal 1:
+roslaunch mobotscp drilling_task_gazebo.launch
+
+# Terminal 2:
+roslaunch mobotscp drilling_task_controllers.launch
+
+# Terminal 3:
+rosrun mobotscp ROS_drilling_task.launch
+```
+
+Hardware experiment: refer to [denso_ridgeback](https://github.com/nqnam1/denso_ridgeback.git).
 
 
-## Focused Kinematic Reachability (FKR)
-The FKR data are saved in .pp files which store all points reachable by the robot's end-effector 
-at some orientations as described below. The raw FKR data will then be analyzed to define a "
-reachable region" relative to the robot with analytical geometry called "reachability limits." 
+## Kinematic Reachability database
+The reachability data are saved in .pp files which store all points reachable by the robot's 
+end-effector at some orientations. The raw reachability data will then be analyzed to define a 
+"reachable region" relative to the robot with analytical geometry called "reachability limits." 
 
 File name: e.g. `fkr.mobile_manipulator_drill_110-150deg<auto_ID_number>.pp`
 * `mobile_manipulator_drill`: robot's name
 * `110-150deg`: orientation of the end-effector (in this case, the drill tip), i.e. polar angle 
 ranges from 110 to 150 degrees, whereas azimuthal angle is fixed at 0 deg by default.
 
-FKR data are stored in `data/reachability/robot.<robot_id>/` for each robot. If you installed 
-MoboTSCP using provided script, `robot.*` and `kinematics.*` folders from `data/reachability/` 
-have already been copied into `~/.openrave/`. Newly generated data will also be located in 
-`~/.openrave/`. The script `scripts/generate_fkr.py` demonstrates how to generate FKR, analyze 
-FKR data for reachability limits, and visualization:
+Reachability data are stored in `data/reachability/robot.<robot_id>/` for each robot. 
+If you installed mobotscp using provided script, `robot.*` and `kinematics.*` folders from 
+`data/reachability/` have already been copied into `~/.openrave/`. 
+Newly generated data will also be located in `~/.openrave/`. 
+The script `scripts/generate_reachdata.py` demonstrates how to generate reachability database, 
+analyze database for reachability limits, and visualization:
 ```
-rosrun mobotscp generate_FKR.py
+rosrun mobotscp generate_reachdata.py
 ```
 Some screenshots of the visualization of FKR data & limits can be found in `data/figs`.
 
 
 ## Troubleshoot
-* `c++: internal compiler error: Killed (program cc1plus)` when building the package: due to 
-CPU or RAM overload during the `make` process, especially if you use virtual machines or WSL. 
-If using the provided scripts, try `./install.sh -n <num_CPUs>` with a small number of CPUs. 
-If building manually, try `catkin build -j <num_CPUs>` or `catkin make install -j <num_CPUs>`. 
-
 * `No module named <module_name>`: there are modules/libraries missing when running script files, 
 firstly check whether all dependencies have been installed:
 ```

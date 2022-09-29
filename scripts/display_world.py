@@ -12,7 +12,7 @@ import tf.transformations as tr
 
 if __name__ == "__main__":
   env = openravepy.Environment()
-  env.Load('worlds/wing_drilling_task.env.xml')
+  env.Load('worlds/drilling_task.env.xml')
   #env.SetViewer('qtcoin')
   env.SetDefaultViewer()
   while env.GetViewer() is None:
