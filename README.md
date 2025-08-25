@@ -6,11 +6,13 @@ For fixed-base robots, please try [RoboTSP](https://github.com/crigroup/robotsp.
 
 Citation:
 ```
-@article{nguyen2023task,
-  title={Task-space clustering for mobile manipulator task sequencing},
+@inproceedings{nguyen2023task,
+  title={Task-Space Clustering for Mobile Manipulator Task Sequencing},
   author={Nguyen, Quang-Nam and Adrian, Nicholas and Pham, Quang-Cuong},
-  journal={arXiv preprint arXiv:2305.17345},
-  year={2023}
+  booktitle={2023 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={3693--3699},
+  year={2023},
+  organization={IEEE}
 }
 ```
 
