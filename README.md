@@ -1,22 +1,37 @@
 # mobotscp
-ROS package for "Task-Space Clustering for Mobile Manipulator Task Sequencing"
+MoboTSCP - ROS package for "[Task-Space Clustering for Mobile Manipulator Task Sequencing](https://doi.org/10.1109/ICRA48891.2023.10161293)"
+
+MoboTSCP is a task sequencing planner for mobile manipulators. 
+For fixed-base robots, please try [RoboTSP](https://github.com/crigroup/robotsp.git) instead.
+
+Citation:
+```
+@article{nguyen2023task,
+  title={Task-space clustering for mobile manipulator task sequencing},
+  author={Nguyen, Quang-Nam and Adrian, Nicholas and Pham, Quang-Cuong},
+  journal={arXiv preprint arXiv:2305.17345},
+  year={2023}
+}
+```
 
 
 ## Getting started
 ### Prerequisites
-* ROS Kinetic/Melodic
+Install ROS and OpenRAVE that are compatible to each other: the below have been tested 
+(for newer versions some debugging efforts are expected)
+* ROS Kinetic/Melodic in Ubuntu 16.04/18.04: follow ROS documentation
 * Gazebo and ROS control packages
 ```
 sudo apt-get install ros-$ROS_DISTRO-gazebo-ros-pkgs ros-$ROS_DISTRO-gazebo-ros-control
 sudo apt-get install ros-$ROS_DISTRO-ros-control ros-$ROS_DISTRO-ros-controllers
 ```
-* OpenRAVE 0.9.0 (mobotscp may not work with other versions)
+* OpenRAVE 0.9.0: follow CRI Group's [instructions](https://github.com/crigroup/openrave-installation.git)
 ```
 # clone the repository
 cd && git clone https://github.com/crigroup/openrave-installation.git
 cd openrave-installation
 
-# in Ubuntu 18.04, use the next line to check out an old commit for OpenRAVE 0.9.0
+# in Ubuntu 18.04 ONLY, use the next line to check out an old commit for OpenRAVE 0.9.0
 git checkout b2766bd789e2432c4485dff189e75cf328f243ec
 
 # install using scripts
@@ -28,27 +43,30 @@ cd && sudo rm -rf openrave-installation
 ```
 
 Some dependencies must be installed manually:
-* [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): a python SCP solver
+* [SetCoverPy](https://github.com/guangtunbenzhu/SetCoverPy): (optional) a python SCP solver
 ```
 pip install SetCoverPy
 ```
-* [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): for data visualization
+* [mayavi2](https://docs.enthought.com/mayavi/mayavi/overview.html): data visualization
 ```
 sudo apt install mayavi2
 ```
+
 Other dependencies are specified in `.rosinstall` file and will be installed using wstool 
 during the installation step below.
 
+
 ### Installation
-After installing all prerequisites above, clone and install mobotscp using the provided script: 
+After installing all prerequisites above, clone and install MoboTSCP using the provided script: 
 ```
 cd ~/<your_catkin_ws>/src
-git clone https://github.com/nqnam1/mobotscp.git
+git clone https://github.com/quangnamng/mobotscp.git
 cd mobotscp
 ./install.sh
 cd && source .bashrc
 ```
 Note: if your ROS workspace directory is not named `catkin_ws`, try `./install.sh -w <your_catkin_ws>`.
+
 
 ### Testing the installation
 Display the setup of our demo task in OpenRAVE environment:
@@ -141,4 +159,4 @@ and its subdirectories by `sudo chown -R <user_name> <directory_path>`.
 
 
 ## Maintainer
-* [Quang-Nam Nguyen](mailto:quangnam.nguyen@ntu.edu.sg)
+* [Quang-Nam Nguyen](mailto:namnguyen@nyu.edu)
